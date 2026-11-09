@@ -1,0 +1,67 @@
+# Rumour-to-Relief stack: self-hosted Otari + PostgreSQL + Ollama + our
+# misinformation guardrail. Adapted from otari's own docker-compose.yml.
+# Start: `python scripts/init_env.py` once, then `docker compose up -d`.
+services:
+  otari:
+    # Pinned by digest (otari version 1b39b91, built 2026-11-09).
+    image: docker.io/mzdotai/otari@sha256:893a197d22c7a227ffffb7aba0f6199e5605928110fec92cff55b9fbc1c8b7c5
+    ports:
+      - "127.0.0.1:${OTARI_PORT:-8000}:8000"
+    volumes:
+      - ./otari/config.yml:/app/config.yml:ro
+    command: ["otari", "serve", "--config", "/app/config.yml"]
+    environment:
+      # Variables interpolated by otari/config.yml. GROQ_API_KEY may be empty.
+      - OTARI_MASTER_KEY=${OTARI_MASTER_KEY:?run python scripts/init_env.py}
+      - OTARI_PROVIDER_ACCOUNT_PEPPER=${OTARI_PROVIDER_ACCOUNT_PEPPER:?run python scripts/init_env.py}
+      - R2R_KEY_VILLAGER=${R2R_KEY_VILLAGER:?run python scripts/init_env.py}
+      - R2R_KEY_OFFICIAL=${R2R_KEY_OFFICIAL:?run python scripts/init_env.py}
+      - R2R_KEY_AMPLIFIER=${R2R_KEY_AMPLIFIER:?run python scripts/init_env.py}
+      - R2R_KEY_DDO=${R2R_KEY_DDO:?run python scripts/init_env.py}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+      misinfo-guard:
+        condition: service_started
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=otari
+      - POSTGRES_PASSWORD=otari
+      - POSTGRES_DB=otari
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U otari"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  ollama:
+    image: docker.io/ollama/ollama:0.40.15
+    volumes:
+      # Reuse models already pulled on the host (qwen3:1.7b, qwen3:4b).
+      - ${OLLAMA_MODELS_DIR:?run python scripts/init_env.py}:/root/.ollama/models
+    environment:
+      - OLLAMA_KEEP_ALIVE=30m
+      - OLLAMA_NUM_PARALLEL=2
+      # Keep both cohort models resident; otherwise each switch reloads (~12 s on CPU).
+      - OLLAMA_MAX_LOADED_MODELS=2
+    ports:
+      - "127.0.0.1:11435:11434"   # debug only; 11434 is left to a host Ollama
+    restart: unless-stopped
+
+  misinfo-guard:
+    build: ./otari/guardrail
+    ports:
+      - "127.0.0.1:8183:8000"     # debug only
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

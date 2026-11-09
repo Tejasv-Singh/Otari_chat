@@ -1,0 +1,110 @@
+# Otari gateway config for Rumour-to-Relief.
+# Every key below is cited to the Otari repo file it comes from
+# (github.com/mozilla-ai/otari @ e74a036, image otari 1b39b91).
+# Secrets are never written here: ${VAR} is interpolated from the environment
+# (per docs/configuration.md "Config file").
+
+# Compose's PostgreSQL service (per config.example.yml).
+database_url: "postgresql://otari:otari@postgres:5432/otari"
+host: "0.0.0.0"
+port: 8000
+master_key: ${OTARI_MASTER_KEY}   # per docs/configuration.md "Config file" example
+
+# Prices from the bundled models.dev snapshot when nothing else prices a model;
+# reject budgeted traffic that has no price at all (per docs/configuration.md "Pricing").
+default_pricing: true
+require_pricing: true
+
+# Keep serving providers from this file instead of copying them onto hosted
+# providers at startup, so the file stays the single source of truth
+# (per docs/configuration.md "Provider configuration", import_configured_providers).
+import_configured_providers: false
+
+providers:
+  # Keyless local backend: a bare entry plus api_base declares it
+  # (per docs/models.md "Local providers"). `ollama` is the compose service name.
+  ollama:
+    api_base: "http://ollama:11434"
+  # Free tier, no card. An empty GROQ_API_KEY leaves the entry with no credential
+  # and Otari ignores it with a warning (per docs/configuration.md "Config file"),
+  # so local-only runs still start.
+  groq:
+    api_key: ${GROQ_API_KEY}
+
+# Local models cost nothing, and "a model priced at zero spends no dollars"
+# (per docs/budgets.md "What a budget limits"). We give them a small *notional*
+# price (USD per million tokens, per docs/configuration.md "Pricing") as a
+# compute-cost proxy, so dollar budgets and the cost-per-cohort chart mean
+# something. These are NOT real charges.
+pricing:
+  "ollama:qwen3:1.7b":
+    input_price_per_million: 0.02
+    output_price_per_million: 0.04
+  "ollama:qwen3:4b-instruct":
+    input_price_per_million: 0.05
+    output_price_per_million: 0.10
+
+# Cohort routing with cloud failover, configured here and not in our code
+# (per docs/routing.md "Failover" and "Selection and failure are separate").
+# Callers send model: villager / official.
+routing:
+  enabled: true
+  policies:
+    villager:
+      select:
+        - default: "ollama:qwen3:1.7b"
+      on_failure:
+        - "groq:llama-3.1-8b-instant"
+    official:
+      select:
+        - default: "ollama:qwen3:4b-instruct"
+      on_failure:
+        - "groq:llama-3.3-70b-versatile"
+
+# Our own misinformation-pattern guardrail service; any service implementing
+# POST /validate can sit here (per docs/guardrails-reference.md
+# "What a guardrails service answers"; setting name per docs/configuration.md
+# "Built-in tools and guardrails variables").
+guardrails_url: "http://misinfo-guard:8000"
+
+# One budget and one key per agent cohort, declared in config
+# (per docs/configuration.md "Budgets and API keys in config").
+# Fields per that section: max_budget, token_limit, request_limit,
+# budget_duration_sec. `ceiling` caps the key as a whole.
+# The amplifier budget is deliberately tiny so it runs out during a run:
+# that is a model event (the cohort goes silent), not a crash.
+budgets:
+  r2r-villager:
+    name: "Villager cohort"
+    token_limit: 200000
+    budget_duration_sec: 86400
+  r2r-official:
+    name: "Panchayat official cohort"
+    token_limit: 200000
+    budget_duration_sec: 86400
+  r2r-amplifier:
+    name: "Amplifier cohort (tiny on purpose)"
+    token_limit: 800
+    budget_duration_sec: 86400
+  r2r-ddo:
+    name: "District Disaster Office"
+    token_limit: 100000
+    budget_duration_sec: 86400
+
+api_keys:
+  villager:
+    secret: ${R2R_KEY_VILLAGER}
+    user_id: cohort-villager
+    ceiling: r2r-villager
+  official:
+    secret: ${R2R_KEY_OFFICIAL}
+    user_id: cohort-official
+    ceiling: r2r-official
+  amplifier:
+    secret: ${R2R_KEY_AMPLIFIER}
+    user_id: cohort-amplifier
+    ceiling: r2r-amplifier
+  ddo:
+    secret: ${R2R_KEY_DDO}
+    user_id: cohort-ddo
+    ceiling: r2r-ddo
