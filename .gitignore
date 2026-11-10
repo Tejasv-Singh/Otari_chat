@@ -4,6 +4,15 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
-data/cache/
-results/
+# Caches and results are local, except the recorded live sweep below, which is
+# committed so a fresh clone can replay it without running any model.
+data/cache/*
+!data/cache/kullu/
+!data/cache/llm/
+results/*
+!results/calibration.json
+!results/sweeps/
+results/sweeps/*
+!results/sweeps/recorded/
+!results/sweeps/main/
 spike/out/

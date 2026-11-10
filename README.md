@@ -16,8 +16,9 @@ who believe a rumour depend heavily on the model. See [Results](#results).
 Built for the Mozilla Otari Hackathon ("Devs Wilding Online", DoraHacks). Everything
 runs on a laptop CPU and costs nothing: no paid APIs, no hosted gateway, no credit card.
 
-- Recorded runs, viewable without any setup: [`docs/index.html`](docs/index.html)
-  (one self-contained page; publish `docs/` with GitHub Pages)
+- Recorded runs, viewable without any setup:
+  **<https://tejasv-singh.github.io/Otari_chat/>** (the same page is
+  [`docs/index.html`](docs/index.html), one self-contained file)
 - Demo script: [DEMO.md](DEMO.md) · Feasibility spike: [spike/SPIKE.md](spike/SPIKE.md) ·
   Calibration: [CALIBRATION.md](CALIBRATION.md)
 
@@ -147,8 +148,40 @@ failover is configured but has not been exercised: it needs a free Groq key.
 
 ## Reproduce
 
-Needs Docker, [uv](https://docs.astral.sh/uv/) (Python 3.11+) and about 8 GB of free
-RAM. No GPU.
+### Without running any model (2 minutes)
+
+The repository includes the recorded live sweep: every model call of the 10 runs
+(`data/cache/llm/prompts.jsonl`), the per-run results (`results/sweeps/recorded/`) and
+the prepared Kullu map data (`data/cache/kullu/`). With only
+[uv](https://docs.astral.sh/uv/) (Python 3.11+) installed, you can replay everything:
+
+```bash
+uv sync
+```
+
+```bash
+uv run python scripts/check_replay.py --recorded recorded
+```
+
+```bash
+uv run python -m r2r.experiments --name main --replay-from recorded
+```
+
+```bash
+uv run python -m r2r.analyze --name main
+```
+
+```bash
+uv run solara run dashboard/app.py
+```
+
+The first command after `uv sync` checks that replay reproduces all 10 live runs call
+for call. If `results/sweeps/main/` already holds the sweep, the replay command skips
+the finished cells; delete that folder to recompute it.
+
+### From scratch, through Otari
+
+Needs Docker, uv and about 8 GB of free RAM. No GPU.
 
 ```bash
 uv sync
@@ -238,8 +271,8 @@ Tests (offline, about 10 seconds):
 uv run python -m pytest
 ```
 
-`results/` and `data/cache/` are not in the repository. The committed
-`docs/index.html` holds the recorded runs.
+A new live sweep appends its calls to `data/cache/llm/prompts.jsonl` and writes new
+run folders, so the committed recording stays replayable alongside it.
 
 ## Replay
 

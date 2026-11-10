@@ -1,0 +1,1623 @@
+{
+ "targets": {
+  "T1": [
+   0.35,
+   0.65
+  ],
+  "T2_min": 0.15,
+  "T3_max": 0.25
+ },
+ "fixed": {
+  "doubt_gain": 0.2
+ },
+ "grid": {
+  "relay_reach": [
+   0.3,
+   0.45,
+   0.6
+  ],
+  "rising_rate": [
+   0.02,
+   0.04,
+   0.06
+  ],
+  "far_relevance": [
+   0.3,
+   0.6
+  ],
+  "flood_tick": [
+   12,
+   14
+  ],
+  "threshold_mean": [
+   0.6,
+   0.7
+  ]
+ },
+ "ranked": [
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.5312,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.7188,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.5312,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.7188,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.4688,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.6875,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.4688,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.6875,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.3438,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.5625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0062,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.3438,
+    "unneeded_share": 0.020833333333333332,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.5625,
+    "unneeded_share": 0.125,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0062,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.3438,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.5,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0062,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.3438,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.5,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0062,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.3125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.5625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0375,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.3125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.5625,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0375,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.5312,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0562,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.5312,
+    "unneeded_share": 0.020833333333333332,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.625,
+    "unneeded_share": 0.125,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0562,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.2812,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.5312,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0688,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.2812,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.5312,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0688,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.2812,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0688,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.2812,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.625,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0688,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.6562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.7188,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0936,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.6562,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.7188,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "score": 0.0936,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.25,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.4375,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.25,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.25,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.4375,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.25,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.625,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.2188,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.4375,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1312,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.2188,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.4375,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1312,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.2188,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.375,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1312,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.2188,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.375,
+    "unneeded_share": 0.16666666666666666,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1312,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3438,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1625,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.020833333333333332,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3438,
+    "unneeded_share": 0.125,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1625,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3438,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1625,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3438,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1625,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1875,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3125,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1875,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1875,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.020833333333333332,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3125,
+    "unneeded_share": 0.125,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1875,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1875,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3125,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1875,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.4062,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1938,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.4062,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1938,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1938,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.020833333333333332,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.3125,
+    "unneeded_share": 0.125,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1938,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.375,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1938,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.375,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.1938,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.25,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.25,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.25,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.25,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.25,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.25,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.25,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.25,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.25,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.25,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.125,
+    "unneeded_share": 0.020833333333333332,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.25,
+    "unneeded_share": 0.125,
+    "rumour_believers": 0.0
+   },
+   "score": 0.25,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.25,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.25,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.25,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.25,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.2188,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.2812,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1875,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.2188,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.2812,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.2188,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.2812,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.2188,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.2812,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.3438,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.1562,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.3438,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.375,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.1562,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.125,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.375,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0938,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4062,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.6,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0938,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4062,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.06,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.0625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0938,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4062,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.06,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.0625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0938,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4062,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.125,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4375,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.6,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.125,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0625,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4375,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.0938,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4375,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.45,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.0938,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0625,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4375,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.04,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.0625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4375,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.04,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.0625,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0625,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4375,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.0938,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0312,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4688,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 14,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.0938,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0312,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.4688,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.02,
+    "far_relevance": 0.3,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.0312,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "score": 0.5,
+   "replay_misses": 0
+  },
+  {
+   "params": {
+    "relay_reach": 0.3,
+    "rising_rate": 0.02,
+    "far_relevance": 0.6,
+    "flood_tick": 12,
+    "threshold_mean": 0.7,
+    "doubt_gain": 0.2
+   },
+   "baseline": {
+    "evac": 0.0312,
+    "unneeded_share": 0.0,
+    "rumour_believers": 0.0
+   },
+   "sms_alert": {
+    "evac": 0.0,
+    "unneeded_share": 0.041666666666666664,
+    "rumour_believers": 0.0
+   },
+   "score": 0.5,
+   "replay_misses": 0
+  }
+ ]
+}

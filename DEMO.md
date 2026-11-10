@@ -148,6 +148,6 @@ Everything here ran on a laptop CPU, for free, through self-hosted Otari."
   again and retake.
 - **`budget` never refuses:** the per-run budget was changed in `otari/config.yml`
   (`r2r-run-amplifier`). The script stops after 39 calls.
-- **Dashboards show no data:** they replay recorded runs from `data/cache/` and
-  `results/sweeps/`, which are not in the repository. Run the live sweep once
-  (README, "Reproduce"), or use the committed `docs/index.html`, which needs neither.
+- **Dashboards show no data:** they replay the recorded runs in `data/cache/` and
+  `results/sweeps/`, which ship with the repository. Check that both folders are
+  intact (`git status`), or use `docs/index.html`, which needs neither.

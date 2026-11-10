@@ -1,0 +1,1351 @@
+{
+ "villager": {
+  "start_date": "2026-10-11T07:41:19.496731+00:00",
+  "end_date": "2026-11-10T07:41:19.496731+00:00",
+  "bucket": "day",
+  "totals": {
+   "cost": 0.000311,
+   "prompt_tokens": 13769,
+   "completion_tokens": 920,
+   "total_tokens": 14689,
+   "cache_read_tokens": 0,
+   "cache_write_tokens": 0,
+   "cache_write_1h_tokens": 0,
+   "reasoning_tokens": 0,
+   "request_count": 72,
+   "error_count": 0,
+   "avg_latency_ms": 1800.3472222222222,
+   "unpriced_requests": 0,
+   "billed_input_tokens": 13769,
+   "billed_output_tokens": 920
+  },
+  "by_model": [
+   {
+    "key": "gemma3:1b",
+    "label": null,
+    "cost": 0.000311,
+    "tokens": 14689,
+    "requests": 72,
+    "is_other": false
+   }
+  ],
+  "by_user": [
+   {
+    "key": "eu_ee7558e8a9474281823dec71ef069bc3",
+    "label": "villager-e6d5ea9365da",
+    "cost": 0.000311,
+    "tokens": 14689,
+    "requests": 72,
+    "is_other": false
+   }
+  ],
+  "by_api_key": [
+   {
+    "key": "b73ce8a2-c759-43b7-b616-7f578532d18a",
+    "label": "villager",
+    "cost": 0.000311,
+    "tokens": 14689,
+    "requests": 72,
+    "is_other": false
+   }
+  ],
+  "by_source": [
+   {
+    "key": "gateway",
+    "label": null,
+    "cost": 0.000311,
+    "tokens": 14689,
+    "requests": 72,
+    "is_other": false
+   }
+  ],
+  "by_source_label": [
+   {
+    "key": null,
+    "label": null,
+    "cost": 0.000311,
+    "tokens": 14689,
+    "requests": 72,
+    "is_other": false
+   }
+  ],
+  "by_endpoint": [
+   {
+    "key": "/v1/chat/completions",
+    "label": null,
+    "cost": 0.000311,
+    "tokens": 14689,
+    "requests": 72,
+    "is_other": false
+   }
+  ],
+  "by_provider": [
+   {
+    "key": "ollama",
+    "label": null,
+    "cost": 0.000311,
+    "tokens": 14689,
+    "requests": 72,
+    "is_other": false
+   }
+  ],
+  "by_tool": [],
+  "by_tag": [],
+  "errors_by_status_code": [],
+  "series": [
+   {
+    "bucket_start": "2026-10-11T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-12T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-13T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-14T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-15T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-16T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-17T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-18T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-19T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-20T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-21T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-22T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-23T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-24T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-25T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-26T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-27T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-28T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-29T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-30T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-31T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-01T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-02T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-03T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-04T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-05T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-06T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-07T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-08T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-09T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-10T00:00:00Z",
+    "cost": 0.000311,
+    "tokens": 14689,
+    "requests": 72,
+    "errors": 0,
+    "input_tokens": 13769,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 920
+   }
+  ]
+ },
+ "official": {
+  "start_date": "2026-10-11T07:41:19.547484+00:00",
+  "end_date": "2026-11-10T07:41:19.547484+00:00",
+  "bucket": "day",
+  "totals": {
+   "cost": 0.00026,
+   "prompt_tokens": 2254,
+   "completion_tokens": 1457,
+   "total_tokens": 3711,
+   "cache_read_tokens": 0,
+   "cache_write_tokens": 0,
+   "cache_write_1h_tokens": 0,
+   "reasoning_tokens": 0,
+   "request_count": 20,
+   "error_count": 0,
+   "avg_latency_ms": 6648.95,
+   "unpriced_requests": 0,
+   "billed_input_tokens": 2254,
+   "billed_output_tokens": 1457
+  },
+  "by_model": [
+   {
+    "key": "gemma3:4b",
+    "label": null,
+    "cost": 0.00026,
+    "tokens": 3711,
+    "requests": 20,
+    "is_other": false
+   }
+  ],
+  "by_user": [
+   {
+    "key": "eu_ead9dab4433846afbb58703761f8ccb7",
+    "label": "official-e6d5ea9365da",
+    "cost": 0.00026,
+    "tokens": 3711,
+    "requests": 20,
+    "is_other": false
+   }
+  ],
+  "by_api_key": [
+   {
+    "key": "e589c8d1-bccb-4939-a8b6-51c26115cbcb",
+    "label": "official",
+    "cost": 0.00026,
+    "tokens": 3711,
+    "requests": 20,
+    "is_other": false
+   }
+  ],
+  "by_source": [
+   {
+    "key": "gateway",
+    "label": null,
+    "cost": 0.00026,
+    "tokens": 3711,
+    "requests": 20,
+    "is_other": false
+   }
+  ],
+  "by_source_label": [
+   {
+    "key": null,
+    "label": null,
+    "cost": 0.00026,
+    "tokens": 3711,
+    "requests": 20,
+    "is_other": false
+   }
+  ],
+  "by_endpoint": [
+   {
+    "key": "/v1/chat/completions",
+    "label": null,
+    "cost": 0.00026,
+    "tokens": 3711,
+    "requests": 20,
+    "is_other": false
+   }
+  ],
+  "by_provider": [
+   {
+    "key": "ollama",
+    "label": null,
+    "cost": 0.00026,
+    "tokens": 3711,
+    "requests": 20,
+    "is_other": false
+   }
+  ],
+  "by_tool": [],
+  "by_tag": [],
+  "errors_by_status_code": [],
+  "series": [
+   {
+    "bucket_start": "2026-10-11T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-12T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-13T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-14T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-15T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-16T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-17T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-18T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-19T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-20T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-21T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-22T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-23T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-24T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-25T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-26T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-27T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-28T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-29T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-30T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-31T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-01T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-02T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-03T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-04T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-05T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-06T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-07T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-08T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-09T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-10T00:00:00Z",
+    "cost": 0.00026,
+    "tokens": 3711,
+    "requests": 20,
+    "errors": 0,
+    "input_tokens": 2254,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 1457
+   }
+  ]
+ },
+ "amplifier": {
+  "start_date": "2026-10-11T07:41:19.587462+00:00",
+  "end_date": "2026-11-10T07:41:19.587462+00:00",
+  "bucket": "day",
+  "totals": {
+   "cost": 4.2e-05,
+   "prompt_tokens": 770,
+   "completion_tokens": 630,
+   "total_tokens": 1400,
+   "cache_read_tokens": 0,
+   "cache_write_tokens": 0,
+   "cache_write_1h_tokens": 0,
+   "reasoning_tokens": 0,
+   "request_count": 8,
+   "error_count": 1,
+   "avg_latency_ms": 2433.0,
+   "unpriced_requests": 0,
+   "billed_input_tokens": 770,
+   "billed_output_tokens": 630
+  },
+  "by_model": [
+   {
+    "key": "gemma3:1b",
+    "label": null,
+    "cost": 4.2e-05,
+    "tokens": 1400,
+    "requests": 8,
+    "is_other": false
+   }
+  ],
+  "by_user": [
+   {
+    "key": "eu_ff5acc4541d54ff080e3450246b04986",
+    "label": "amplifier-e6d5ea9365da",
+    "cost": 4.2e-05,
+    "tokens": 1400,
+    "requests": 8,
+    "is_other": false
+   }
+  ],
+  "by_api_key": [
+   {
+    "key": "dc40c09c-1c76-4655-aec0-6dd1aaed3a99",
+    "label": "amplifier",
+    "cost": 4.2e-05,
+    "tokens": 1400,
+    "requests": 8,
+    "is_other": false
+   }
+  ],
+  "by_source": [
+   {
+    "key": "gateway",
+    "label": null,
+    "cost": 4.2e-05,
+    "tokens": 1400,
+    "requests": 8,
+    "is_other": false
+   }
+  ],
+  "by_source_label": [
+   {
+    "key": null,
+    "label": null,
+    "cost": 4.2e-05,
+    "tokens": 1400,
+    "requests": 8,
+    "is_other": false
+   }
+  ],
+  "by_endpoint": [
+   {
+    "key": "/v1/chat/completions",
+    "label": null,
+    "cost": 4.2e-05,
+    "tokens": 1400,
+    "requests": 8,
+    "is_other": false
+   }
+  ],
+  "by_provider": [
+   {
+    "key": "ollama",
+    "label": null,
+    "cost": 4.2e-05,
+    "tokens": 1400,
+    "requests": 8,
+    "is_other": false
+   }
+  ],
+  "by_tool": [],
+  "by_tag": [],
+  "errors_by_status_code": [
+   {
+    "status_code": 403,
+    "error_class": "auth",
+    "requests": 1
+   }
+  ],
+  "series": [
+   {
+    "bucket_start": "2026-10-11T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-12T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-13T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-14T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-15T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-16T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-17T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-18T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-19T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-20T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-21T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-22T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-23T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-24T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-25T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-26T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-27T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-28T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-29T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-30T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-10-31T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-01T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-02T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-03T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-04T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-05T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-06T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-07T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-08T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-09T00:00:00Z",
+    "cost": 0.0,
+    "tokens": 0,
+    "requests": 0,
+    "errors": 0,
+    "input_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 0
+   },
+   {
+    "bucket_start": "2026-11-10T00:00:00Z",
+    "cost": 4.2e-05,
+    "tokens": 1400,
+    "requests": 8,
+    "errors": 1,
+    "input_tokens": 770,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 630
+   }
+  ]
+ },
+ "ddo": {
+  "start_date": "2026-10-11T07:41:19.636864+00:00",
+  "end_date": "2026-11-10T07:41:19.636864+00:00",
+  "bucket": "day",
+  "totals": {
+   "cost": 0.0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "cache_read_tokens": 0,
+   "cache_write_tokens": 0,
+   "cache_write_1h_tokens": 0,
+   "reasoning_tokens": 0,
+   "request_count": 0,
+   "error_count": 0,
+   "avg_latency_ms": null,
+   "unpriced_requests": 0,
+   "billed_input_tokens": 0,
+   "billed_output_tokens": 0
+  },
+  "by_model": [],
+  "by_user": [],
+  "by_api_key": [],
+  "by_source": [],
+  "by_source_label": [],
+  "by_endpoint": [],
+  "by_provider": [],
+  "by_tool": [],
+  "by_tag": [],
+  "errors_by_status_code": [],
+  "series": []
+ }
+}
