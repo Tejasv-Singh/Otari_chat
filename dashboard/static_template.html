@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rumour-to-Relief</title>
+<meta name="description" content="Agent-based simulation of flood alerts and misinformation in Kullu district, driven by open-weight models through a self-hosted Otari gateway. Recorded runs.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --ink: #1b2330; --muted: #5d6878; --line: #e2e6ec;
+  --accent: #3b6fd8; --accent-ink: #ffffff;
+  --home: #8a94a6; --evacuating: #e0a100; --safe: #1f9d55; --caught: #d64545;
+  --rumour: #d6457a; --official: #7c4dcc; --amplifier: #d6457a; --ddo: #222222;
+  --qwen3: #3b6fd8; --gemma3: #e0a100; --water: #2f7fd1;
+  --chip: #eef1f5; --flag-bg: #fdecef; --flag-ink: #a3213f;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1319; --panel: #171d26; --ink: #e6ebf2; --muted: #9aa6b6; --line: #273141;
+    --accent: #6b97ef; --accent-ink: #0f1319; --home: #7d879a; --ddo: #e6ebf2;
+    --chip: #222b38; --flag-bg: #3a1822; --flag-ink: #ff9ab3; --water: #5aa0ea;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1319; --panel: #171d26; --ink: #e6ebf2; --muted: #9aa6b6; --line: #273141;
+  --accent: #6b97ef; --accent-ink: #0f1319; --home: #7d879a; --ddo: #e6ebf2;
+  --chip: #222b38; --flag-bg: #3a1822; --flag-ink: #ff9ab3; --water: #5aa0ea;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 20px 16px 48px; }
+header h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+header p { margin: 6px 0 0; color: var(--muted); max-width: 820px; }
+.badge { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px;
+  background: var(--chip); color: var(--muted); margin-left: 8px; vertical-align: middle; }
+.controls { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; margin: 18px 0 14px; }
+.group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.group > span { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; color: var(--ink); padding: 6px 11px; font: inherit; font-size: 14px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.timeline { display: flex; align-items: center; gap: 10px; flex: 1 1 320px; min-width: 0; }
+.timeline input { flex: 1; min-width: 0; accent-color: var(--accent); }
+.play { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px;
+  width: 38px; height: 32px; cursor: pointer; font-size: 14px; }
+.ticklabel { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 14px; }
+.ticklabel b { font-weight: 600; }
+.grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; min-width: 0; }
+.card h2 { font-size: 15px; margin: 0 0 10px; }
+.card h2 small { font-weight: 400; color: var(--muted); }
+#map { height: 520px; border-radius: 8px; background: var(--chip); }
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.kpi { border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.kpi .v { font-size: 24px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 12px; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.ramp { display: inline-block; width: 90px; height: 10px; border-radius: 3px; vertical-align: -1px; margin: 0 5px; }
+.feed { max-height: 330px; overflow: auto; padding-right: 4px; }
+.msg { border-top: 1px solid var(--line); padding: 8px 0; font-size: 13px; }
+.msg:first-child { border-top: 0; }
+.msg .meta { color: var(--muted); font-size: 12px; margin-bottom: 2px; }
+.chip { display: inline-block; padding: 0 6px; border-radius: 5px; background: var(--chip); font-size: 11px; margin-right: 4px; }
+.flag { background: var(--flag-bg); color: var(--flag-ink); font-weight: 600; }
+.msg .text { white-space: pre-wrap; word-break: break-word; }
+.charts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.chartbox { position: relative; height: 220px; }
+section.compare { margin-top: 28px; }
+section.compare > h2 { font-size: 20px; margin: 0 0 4px; }
+section.compare > p { color: var(--muted); margin: 0 0 14px; max-width: 860px; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 5px 6px; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--muted); font-weight: 500; }
+.tablewrap { overflow-x: auto; }
+.ranks { font-size: 14px; margin: 0 0 8px; padding-left: 18px; }
+.note { font-size: 13px; color: var(--muted); }
+footer { margin-top: 32px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+footer a, .note a { color: var(--accent); }
+.leaflet-container { font: inherit; }
+/* Mute the busy OSM style so the agents stand out; darken it in dark mode. */
+.basemap { filter: saturate(0.35) brightness(1.04); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .basemap { filter: saturate(0.3) invert(1) hue-rotate(180deg) brightness(0.9); } }
+:root[data-theme="dark"] .basemap { filter: saturate(0.3) invert(1) hue-rotate(180deg) brightness(0.9); }
+@media (max-width: 920px) {
+  .grid, .two, .charts { grid-template-columns: minmax(0, 1fr); }
+  #map { height: 400px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Rumour-to-Relief <span class="badge">recorded runs · replayed offline</span></h1>
+    <p>A monsoon flash flood in <b id="district">Kullu</b>, Himachal Pradesh. Villagers, panchayat officials,
+      WhatsApp-style rumour amplifiers and the district disaster office talk through small open-weight models
+      behind a self-hosted Otari gateway. Does the model that drives the agents change which intervention
+      looks best?</p>
+  </header>
+
+  <div class="controls" role="group" aria-label="Run selection">
+    <div class="group"><span>Models</span><div class="seg" id="fam"></div></div>
+    <div class="group"><span>Intervention</span><div class="seg" id="scen"></div></div>
+    <div class="group"><span>Colour by</span><div class="seg" id="colour"></div></div>
+    <div class="timeline">
+      <button class="play" id="play" aria-label="Play">▶</button>
+      <input type="range" id="tick" min="0" max="20" value="0" aria-label="Tick">
+      <div class="ticklabel" id="ticklabel"></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Kullu villages <small id="mapsub"></small></h2>
+      <div id="map" role="img" aria-label="Map of villages and villagers"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="card">
+      <div class="kpis">
+        <div class="kpi"><div class="v" id="k-evac">–</div><div class="l">at-risk villagers evacuated</div></div>
+        <div class="kpi"><div class="v" id="k-caught">–</div><div class="l">caught at home</div></div>
+        <div class="kpi"><div class="v" id="k-rumour">–</div><div class="l">believe a rumour</div></div>
+        <div class="kpi"><div class="v" id="k-tag">–</div><div class="l">guardrail tag rate</div></div>
+      </div>
+      <h2>Messages so far <small id="msgcount"></small></h2>
+      <div class="feed" id="feed"></div>
+    </div>
+  </div>
+
+  <div class="charts">
+    <div class="card"><h2>Belief over time</h2><div class="chartbox"><canvas id="c-belief"></canvas></div></div>
+    <div class="card"><h2>Notional cost per cohort <small>USD, cumulative</small></h2><div class="chartbox"><canvas id="c-cost"></canvas></div></div>
+    <div class="card"><h2>Guardrail tag rate</h2><div class="chartbox"><canvas id="c-tag"></canvas></div></div>
+  </div>
+
+  <section class="compare">
+    <h2>Does the model change the conclusion?</h2>
+    <p id="verdict"></p>
+    <div class="two">
+      <div class="card"><h2>At-risk villagers evacuated</h2><div class="chartbox"><canvas id="c-cmp-evac"></canvas></div></div>
+      <div class="card"><h2>Villagers believing a rumour</h2><div class="chartbox"><canvas id="c-cmp-rumour"></canvas></div></div>
+    </div>
+    <div class="two" style="margin-top:16px">
+      <div class="card">
+        <h2>Intervention ranking</h2>
+        <ul class="ranks" id="ranks"></ul>
+        <p class="note">Ranked by at-risk villagers evacuated, ties broken by fewer caught. One seed per cell:
+          two live runs of the same cell differ by about 6 points from model sampling alone, so gaps that size are noise.</p>
+      </div>
+      <div class="card">
+        <h2>Otari usage, selected run <small>(recorded live)</small></h2>
+        <div class="tablewrap"><table id="usage"></table></div>
+        <p class="note" id="usagenote"></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Recorded runs, replayed offline. Every model call in these runs went live through a self-hosted
+      <a href="https://github.com/mozilla-ai/otari">Otari</a> gateway: one virtual key per cohort, per-run token
+      budgets, a routing policy per model family, and a misinformation guardrail on every interpretation. The page
+      replays those answers call for call, so no gateway is needed to view it.</p>
+    <p>Movement and belief rules are hand-written and calibrated only against plausibility targets for the
+      official warning channel; costs are notional prices on local models, not charges. Map data © OpenStreetMap
+      contributors. Generated <span id="generated"></span>.</p>
+  </footer>
+</div>
+
+<script id="r2r-data" type="application/json">/*__R2R_DATA__*/null</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("r2r-data").textContent);
+  if (!D) { document.body.insertAdjacentHTML("afterbegin", "<p style='padding:16px'>No data embedded. Run dashboard/export.py.</p>"); return; }
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const STATUS = ["home", "evacuating", "safe", "caught"];
+  const LABEL = { baseline: "Baseline", sms_alert: "SMS alert", fact_check: "Fact-check bot",
+                  local_language: "Local language", all: "All three" };
+  const COHORTS = ["villager", "official", "amplifier", "ddo"];
+  const FAMS = Object.keys(D.families);
+  const pct = x => x == null ? "–" : Math.round(x * 100) + "%";
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const state = { fam: FAMS[0], scen: "baseline", colour: "status", tick: 0, playing: null };
+  try { Object.assign(state, JSON.parse(localStorage.getItem("r2r-view") || "{}"), { tick: 0, playing: null }); } catch (e) {}
+  if (!D.runs[state.fam + "/" + state.scen]) { state.fam = FAMS[0]; state.scen = "baseline"; }
+  const save = () => { try { localStorage.setItem("r2r-view", JSON.stringify({ fam: state.fam, scen: state.scen, colour: state.colour })); } catch (e) {} };
+  const run = () => D.runs[state.fam + "/" + state.scen];
+  document.getElementById("district").textContent = D.geo.district[0].toUpperCase() + D.geo.district.slice(1);
+  document.getElementById("generated").textContent = D.generated;
+
+  // ---------- controls
+  function seg(id, items, key, onChange) {
+    const el = document.getElementById(id);
+    el.innerHTML = items.map(([v, t]) => `<button type="button" data-v="${v}">${esc(t)}</button>`).join("");
+    const sync = () => el.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === state[key]));
+    el.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; state[key] = b.dataset.v; sync(); save(); onChange(); });
+    sync();
+  }
+  seg("fam", FAMS.map(f => [f, f]), "fam", () => loadRun());
+  seg("scen", D.scenarios.map(s => [s, LABEL[s] || s]), "scen", () => loadRun());
+  seg("colour", [["status", "Status"], ["danger", "Perceived danger"], ["rumour", "Rumour belief"]], "colour", () => drawTick());
+  const slider = document.getElementById("tick"), playBtn = document.getElementById("play");
+  slider.addEventListener("input", () => { state.tick = +slider.value; drawTick(); });
+  playBtn.addEventListener("click", () => {
+    if (state.playing) { clearInterval(state.playing); state.playing = null; playBtn.textContent = "▶"; playBtn.setAttribute("aria-label", "Play"); return; }
+    if (state.tick >= run().states.length - 1) state.tick = 0;
+    playBtn.textContent = "❚❚"; playBtn.setAttribute("aria-label", "Pause");
+    state.playing = setInterval(() => {
+      if (state.tick >= run().states.length - 1) { playBtn.click(); return; }
+      state.tick++; slider.value = state.tick; drawTick();
+    }, 550);
+  });
+
+  // ---------- map
+  const map = L.map("map", { scrollWheelZoom: false, preferCanvas: true });
+  // OpenStreetMap's standard tiles: free, no key, attribution required.
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 15, className: "basemap",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  const water = css("--water");
+  const boundary = L.geoJSON(D.geo.boundary, { style: { color: css("--muted"), weight: 1.5, fill: false, dashArray: "4 4" } }).addTo(map);
+  L.geoJSON(D.geo.flood_zone, { style: { color: water, weight: 0, fillColor: water, fillOpacity: 0.28 } }).addTo(map);
+  L.geoJSON(D.geo.rivers, { style: { color: water, weight: 1.6, opacity: 0.8 } }).addTo(map);
+  map.fitBounds(L.latLngBounds(D.geo.villages.map(v => v.pos)), { padding: [24, 24] });
+  const vname = Object.fromEntries(D.geo.villages.map(v => [v.id, v]));
+  D.geo.villages.forEach(v => L.circleMarker(v.pos, { radius: 3, color: v.flood_zone ? water : css("--muted"), weight: 1.5,
+    fillColor: "#fff", fillOpacity: 1 }).bindTooltip(`${esc(v.name)}${v.flood_zone ? " · flood zone" : ""}`).addTo(map));
+  const othersLayer = L.layerGroup().addTo(map), peopleLayer = L.layerGroup().addTo(map);
+  let markers = [];
+
+  const lerp = (a, b, t) => a.map((x, i) => Math.round(x + (b[i] - x) * t));
+  const rgb = h => { const m = h.replace("#", ""); return [0, 2, 4].map(i => parseInt(m.slice(i, i + 2), 16)); };
+  const ramp = (c, t) => `rgb(${lerp(rgb("#e9edf3"), rgb(c), Math.max(0, Math.min(1, t))).join(",")})`;
+
+  function phase(r, t) {
+    const p = r.params;
+    return t < p.warning_tick ? "before the warning" : t < p.rising_tick ? "warning issued"
+         : t < p.flood_tick ? "river rising" : t === p.flood_tick ? "flash flood" : "after the flood";
+  }
+
+  function loadRun() {
+    const r = run();
+    if (state.playing) playBtn.click();
+    slider.max = r.states.length - 1;
+    state.tick = Math.min(state.tick, r.states.length - 1); slider.value = state.tick;
+    peopleLayer.clearLayers(); othersLayer.clearLayers();
+    const offs = i => [((i * 37) % 9 - 4) * 0.0009, ((i * 53) % 9 - 4) * 0.0009];
+    markers = r.villagers.map((p, i) => {
+      const m = L.circleMarker(p.home, { radius: 4.5, weight: 1, color: "#fff", fillOpacity: 0.95 }).addTo(peopleLayer);
+      m._home = p.home; m._safe = p.safe ? [p.safe[0] + offs(i)[0], p.safe[1] + offs(i)[1]] : null; m._p = p;
+      return m;
+    });
+    const kindName = { official: "Panchayat official", amplifier: "Rumour amplifier", ddo: "District disaster office" };
+    r.others.forEach(o => L.circleMarker(o.pos, { radius: 6.5, weight: 1.5, color: "#fff", fillColor: css("--" + o.kind), fillOpacity: 1 })
+      .bindTooltip(`${kindName[o.kind]}${vname[o.village] ? " · " + esc(vname[o.village].name) : ""}`).addTo(othersLayer));
+    const fam = D.models[state.fam] || {};
+    document.getElementById("mapsub").textContent = `· ${state.fam}: villagers on ${fam.villager || "?"}, officials on ${fam.official || "?"}`;
+    drawCharts(); drawUsage(); drawTick();
+  }
+
+  function legend() {
+    const el = document.getElementById("legend");
+    const dot = (c, t) => `<span><i style="background:${c}"></i>${t}</span>`;
+    let h = state.colour === "status"
+      ? STATUS.map(s => dot(css("--" + s), s)).join("") + `<span><i style="background:#fff;box-shadow:0 0 0 2.5px ${css("--rumour")}"></i>believes a rumour</span>`
+      : `<span>0<span class="ramp" style="background:linear-gradient(90deg,#e9edf3,${state.colour === "danger" ? css("--accent") : css("--rumour")})"></span>1 ${state.colour === "danger" ? "perceived danger" : "rumour belief"}</span>`;
+    h += dot(css("--official"), "official") + dot(css("--amplifier"), "amplifier") + dot(css("--ddo"), "district office")
+       + `<span><i style="background:${water};opacity:.5;border-radius:2px"></i>flood zone</span>`;
+    el.innerHTML = h;
+  }
+
+  function drawTick() {
+    const r = run(), t = state.tick, S = r.states[t], ser = r.series;
+    markers.forEach((m, i) => {
+      const [st, danger, rumour] = S[i];
+      const believer = rumour > 0.5;
+      let fill = state.colour === "status" ? css("--" + STATUS[st]) : state.colour === "danger" ? ramp(css("--accent"), danger) : ramp(css("--rumour"), rumour);
+      m.setLatLng(st === 2 && m._safe ? m._safe : m._home);
+      m.setStyle({ fillColor: fill, color: state.colour === "status" && believer ? css("--rumour") : "#fff", weight: state.colour === "status" && believer ? 2.5 : 1 });
+      const p = m._p, v = vname[p.village];
+      m.bindTooltip(`<b>${esc(p.persona.replace("_", " "))}</b> · ${esc(v ? v.name : "")}${p.at_risk ? " (flood zone)" : ""}<br>`
+        + `${STATUS[st]} · danger ${danger.toFixed(2)} · rumour ${rumour.toFixed(2)}${p.phone ? "" : " · no phone"}`);
+    });
+    document.getElementById("ticklabel").innerHTML = `tick <b>${t}</b>/${r.states.length - 1} · ${phase(r, t)}`;
+    document.getElementById("k-evac").textContent = pct(ser.evacuated_at_risk_share[t]);
+    document.getElementById("k-caught").textContent = ser.caught[t];
+    document.getElementById("k-rumour").textContent = pct(ser.rumour_believers_share[t]);
+    document.getElementById("k-tag").textContent = pct(ser.misinfo_tag_rate[t]);
+    const msgs = r.messages.filter(m => m.tick <= t).slice().reverse();
+    document.getElementById("msgcount").textContent = `· ${msgs.length} written by the models`;
+    document.getElementById("feed").innerHTML = msgs.length ? msgs.map(m => `<div class="msg"><div class="meta">
+        <span class="chip">t${m.tick}</span><span class="chip">${esc(m.kind)}</span><span class="chip">${esc(m.cohort)}</span><span class="chip">${esc(m.lang)}</span>
+        ${m.misinfo_flag ? '<span class="chip flag">tagged misinformation</span>' : ""} reach ${m.reach}</div>
+        <div class="text">${esc(m.text.trim().slice(0, 420))}${m.text.length > 420 ? "…" : ""}</div></div>`).join("")
+      : '<p class="note">No messages yet. The district office warns at tick ' + r.params.warning_tick + ".</p>";
+    legend();
+    Object.values(charts).forEach(c => c.update("none"));
+  }
+
+  // ---------- charts
+  Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+  Chart.defaults.color = css("--muted");
+  Chart.defaults.borderColor = css("--line");
+  const tickLine = { id: "tickLine", afterDatasetsDraw(c) {
+    const x = c.scales.x.getPixelForValue(state.tick), { top, bottom } = c.chartArea, g = c.ctx;
+    g.save(); g.strokeStyle = css("--ink"); g.globalAlpha = 0.35; g.setLineDash([4, 3]);
+    g.beginPath(); g.moveTo(x, top); g.lineTo(x, bottom); g.stroke(); g.restore(); } };
+  const charts = {};
+  const line = (id, datasets, yfmt, ymax) => {
+    charts[id]?.destroy();
+    charts[id] = new Chart(document.getElementById(id), {
+      type: "line", data: { labels: run().series.tick, datasets }, plugins: [tickLine],
+      options: { animation: false, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+        elements: { point: { radius: 0 }, line: { borderWidth: 2, tension: 0.15 } },
+        scales: { x: { title: { display: true, text: "tick" }, grid: { display: false } },
+                  y: { beginAtZero: true, max: ymax, ticks: { callback: yfmt } } },
+        plugins: { legend: { labels: { boxWidth: 10, boxHeight: 10 } },
+                   tooltip: { callbacks: { label: c => `${c.dataset.label}: ${yfmt(c.parsed.y)}` } } } } });
+  };
+  const ds = (label, data, color, extra = {}) => ({ label, data, borderColor: color, backgroundColor: color, ...extra });
+  function drawCharts() {
+    const s = run().series, p = v => Math.round(v * 100) + "%";
+    line("c-belief", [ds("perceived danger (mean)", s.mean_danger, css("--accent")),
+                      ds("evacuated (at risk)", s.evacuated_at_risk_share, css("--safe")),
+                      ds("believe a rumour", s.rumour_believers_share, css("--rumour"))], p, 1);
+    const cohortColour = c => css(c === "villager" ? "--accent" : "--" + c);
+    line("c-cost", COHORTS.map(c => ds(c, s["cost_" + c], cohortColour(c))),
+      v => v === 0 ? "$0" : "$" + (v < 0.001 ? (v * 1e6).toFixed(0) + "µ" : v.toFixed(4)));
+    line("c-tag", [ds("tagged / checked", s.misinfo_tag_rate, css("--caught"))], p);
+  }
+
+  // ---------- comparison across model families (whole sweep)
+  function bars(id, col) {
+    const rows = D.sweep;
+    new Chart(document.getElementById(id), { type: "bar",
+      data: { labels: D.scenarios.map(s => LABEL[s] || s),
+        datasets: FAMS.map(f => ({ label: f, backgroundColor: css("--" + f) || css("--accent"),
+          data: D.scenarios.map(s => (rows.find(r => r.model_set === f && r.scenario_name === s) || {})[col] ?? null) })) },
+      options: { animation: false, maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true, max: 1, ticks: { callback: v => Math.round(v * 100) + "%" } }, x: { grid: { display: false } } },
+        plugins: { legend: { labels: { boxWidth: 10, boxHeight: 10 } },
+          tooltip: { callbacks: { label: c => `${c.dataset.label}: ${Math.round(c.parsed.y * 100)}%` } } } } });
+  }
+  bars("c-cmp-evac", "evacuated_at_risk_share");
+  bars("c-cmp-rumour", "rumour_believers_share");
+  document.getElementById("ranks").innerHTML = Object.entries(D.ranking).map(([f, r]) =>
+    `<li><b>${esc(f)}</b>: ${r.map(s => esc(LABEL[s] || s)).join(" › ")}</li>`).join("");
+  const top = Object.values(D.ranking).map(r => r[0]);
+  const avg = (f, col) => { const xs = D.sweep.filter(r => r.model_set === f).map(r => r[col]); return xs.reduce((a, b) => a + b, 0) / xs.length; };
+  const eff = (f, s) => { const g = r => (D.sweep.find(x => x.model_set === f && x.scenario_name === r) || {}).evacuated_at_risk_share;
+    return Math.round((g(s) - g("baseline")) * 100); };
+  if (FAMS.length === 2) {
+    const [a, b] = FAMS;
+    document.getElementById("verdict").innerHTML =
+      `Both model families pick the same best intervention (${esc(LABEL[top[0]] || top[0])})${top[0] === top[1] ? "" : " — no: they differ"}, `
+      + `and the rankings mostly agree (Kendall τ = ${D.kendall_tau}). The <b>size</b> of each effect does not: the SMS alert adds `
+      + `${eff(a, "sms_alert")} points with ${esc(a)} and ${eff(b, "sms_alert")} with ${esc(b)}; local-language messaging adds `
+      + `${eff(a, "local_language")} and ${eff(b, "local_language")}. Rumour belief is the clearest model effect: on average `
+      + `${pct(avg(a, "rumour_believers_share"))} of villagers believe a rumour with ${esc(a)}, ${pct(avg(b, "rumour_believers_share"))} with ${esc(b)}.`;
+  }
+
+  function drawUsage() {
+    const row = D.sweep.find(r => r.model_set === state.fam && r.scenario_name === state.scen);
+    const t = document.getElementById("usage"), note = document.getElementById("usagenote");
+    if (!row) { t.innerHTML = ""; note.textContent = "No recorded live run for this cell."; return; }
+    const f = (v, d = 0) => v == null ? "–" : Number(v).toLocaleString(undefined, { maximumFractionDigits: d });
+    t.innerHTML = "<tr><th>cohort</th><th>requests</th><th>tokens</th><th>avg latency</th><th>notional $</th></tr>"
+      + COHORTS.map(c => `<tr><td>${c}</td><td>${f(row["otari_requests_" + c])}</td><td>${f(row["otari_tokens_" + c] ?? row["tokens_" + c])}</td>`
+        + `<td>${row["otari_latency_ms_" + c] == null ? "–" : f(row["otari_latency_ms_" + c] / 1000, 1) + " s"}</td><td>${f(row["cost_" + c], 6)}</td></tr>`).join("");
+    note.innerHTML = `Live run <code>${esc(row.live_run_id || "?")}</code> took ${f(row.live_wall_s)} s on a laptop CPU. `
+      + `Budget events: ${f(row.budget_events)} (silent: ${esc(row.silent_cohorts || "none")}). Upstream errors: ${f(row.upstream_errors)}. `
+      + `Failovers to the cloud backup: ${f(row.fallbacks)}. Per-cohort numbers come from Otari's own usage API.`;
+  }
+
+  loadRun();
+})();
+</script>
+</body>
+</html>

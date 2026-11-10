@@ -3163,6 +3163,7 @@ source = { editable = "." }
 dependencies = [
     { name = "geopandas" },
     { name = "httpx" },
+    { name = "matplotlib" },
     { name = "mesa", version = "3.3.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "mesa", version = "3.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "mesa-geo" },
@@ -3173,13 +3174,13 @@ dependencies = [
     { name = "pyproj", version = "3.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "pyproj", version = "3.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "shapely" },
+    { name = "solara" },
     { name = "tabulate" },
 ]
 
 [package.dev-dependencies]
 dev = [
     { name = "fastapi" },
-    { name = "matplotlib" },
     { name = "pytest" },
 ]
 
@@ -3187,6 +3188,7 @@ dev = [
 requires-dist = [
     { name = "geopandas", specifier = ">=1.2.0" },
     { name = "httpx", specifier = ">=0.27" },
+    { name = "matplotlib", specifier = ">=3.11.2" },
     { name = "mesa", specifier = ">=3.3.1" },
     { name = "mesa-geo", specifier = ">=0.9.3" },
     { name = "networkx", specifier = ">=3.6.1" },
@@ -3194,13 +3196,13 @@ requires-dist = [
     { name = "pyarrow", specifier = ">=26.0.1" },
     { name = "pyproj", specifier = ">=3.7.2" },
     { name = "shapely", specifier = ">=2.2.0" },
+    { name = "solara", specifier = ">=1.66.2" },
     { name = "tabulate", specifier = ">=0.10.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "fastapi", specifier = ">=0.115" },
-    { name = "matplotlib", specifier = ">=3.11.2" },
     { name = "pytest", specifier = ">=8" },
 ]
 

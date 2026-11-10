@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "geopandas>=1.2.0",
     "httpx>=0.27",
+    "matplotlib>=3.11.2",
     "mesa>=3.3.1",
     "mesa-geo>=0.9.3",
     "networkx>=3.6.1",
@@ -14,6 +15,7 @@ dependencies = [
     "pyarrow>=26.0.1",
     "pyproj>=3.7.2",
     "shapely>=2.2.0",
+    "solara>=1.66.2",
     "tabulate>=0.10.0",
 ]
 
@@ -28,7 +30,6 @@ packages = ["src/r2r"]
 dev = [
     "pytest>=8",
     "fastapi>=0.115",
-    "matplotlib>=3.11.2",
 ]
 
 [tool.pytest.ini_options]
