@@ -36,7 +36,8 @@ PRE_CALIBRATION = dict(flood_tick=15, relay_reach=0.6, doubt_gain=0.0, far_relev
 
 
 def check_recorded(name: str) -> bool:
-    keys, d = load_keys(), RESULTS / "sweeps" / name
+    keys: dict[str, str] = {}   # replay only: no key is ever sent
+    d = RESULTS / "sweeps" / name
     all_ok = True
     for row in pd.read_parquet(d / "runs.parquet").itertuples():
         live = pd.read_parquet(d / row.run_id / "llm_calls.parquet")

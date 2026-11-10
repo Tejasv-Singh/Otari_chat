@@ -26,7 +26,7 @@ from pathlib import Path
 import pandas as pd
 
 from r2r.geodata import load_district
-from r2r.llm import OtariClient, load_keys
+from r2r.llm import OtariClient
 from r2r.model import FloodModel, Scenario, Villager
 
 GRID: dict[str, list[float | int]] = {
@@ -73,7 +73,8 @@ def score(base: dict[str, float], sms: dict[str, float]) -> float:
 
 def main() -> None:
     logging.basicConfig(level=logging.WARNING)
-    keys, district = load_keys(), load_district(Scenario().district)
+    keys: dict[str, str] = {}   # replay only: no key is ever sent
+    district = load_district(Scenario().district)
     runs = {"baseline": recorded_run("baseline"), "sms_alert": recorded_run("sms_alert")}
     rows = []
     names = list(GRID)

@@ -72,7 +72,7 @@ def main() -> None:
     runs_path, model_path = out / "runs.parquet", out / "model.parquet"
     runs = pd.read_parquet(runs_path) if runs_path.exists() else pd.DataFrame()
     done = set(zip(runs.get("model_set", []), runs.get("scenario_name", []), runs.get("seed", [])))
-    keys = load_keys()
+    keys = {} if args.replay_from else load_keys()   # replay never sends a key
     rec = pd.read_parquet(RESULTS / "sweeps" / args.replay_from / "runs.parquet") if args.replay_from else None
     cells = [(m, s, seed) for seed in args.seeds for m in args.models for s in args.scenarios]
     print(f"{len(cells)} cells, {len(done & set(cells))} already done -> {out}", flush=True)
