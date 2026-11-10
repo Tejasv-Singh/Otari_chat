@@ -1,0 +1,47 @@
+{
+ "run_id": "01da34ad0c00",
+ "scenario": "sms_alert+fact_check+local_language",
+ "policies": {
+  "villager": "villager",
+  "amplifier": "villager",
+  "official": "official",
+  "ddo": "official"
+ },
+ "seed": 42,
+ "wall_s": 0.2,
+ "villagers": 80,
+ "agents": 95,
+ "evacuated_at_risk_share": 0.75,
+ "caught": 8,
+ "unneeded_evacuations": 0,
+ "rumour_believers_share": 0.0125,
+ "messages": 71,
+ "rumours": 7,
+ "refusals": 0,
+ "misinfo_tag_rate": 0.0588,
+ "llm_calls": 115,
+ "cache_hits": 119,
+ "budget_events": 1,
+ "upstream_errors": 0,
+ "fallbacks": 0,
+ "silent_cohorts": "amplifier",
+ "replay": true,
+ "replay_misses": 0,
+ "valid": true,
+ "gateway": "local",
+ "after_action_report": null,
+ "tokens": {
+  "villager": 18171,
+  "official": 4170,
+  "amplifier": 1336,
+  "ddo": 962
+ },
+ "cost_usd_notional": {
+  "villager": 0.000408,
+  "official": 0.0003,
+  "amplifier": 3.6e-05,
+  "ddo": 6.7e-05
+ },
+ "otari_usage_totals": {},
+ "otari_tool_calls": {}
+}

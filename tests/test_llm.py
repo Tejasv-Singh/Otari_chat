@@ -122,3 +122,37 @@ def test_failover_and_request_id_are_read_from_serving_headers() -> None:
     assert r.ok and r.fallback and r.provider == "groq" and r.request_id == "req-1"
     local = client(FakeOtari()).chat("official", "s", "m", purpose="t", tick=0)
     assert not local.fallback and local.provider == "ollama"
+
+
+def test_a_key_that_is_not_a_service_key_stops_naming_an_end_user() -> None:
+    fake = FakeOtari(service_keys=False)          # otari.ai refuses `user` on an ordinary key
+    c = client(fake)
+    first = c.chat("villager", "s", "m1", purpose="t", tick=0)
+    second = c.chat("villager", "s", "m2", purpose="t", tick=0)
+    assert first.ok and second.ok and c.name_end_user is False
+    assert "user" in fake.bodies[0] and "user" not in fake.bodies[1] and "user" not in fake.bodies[2]
+    assert fake.calls == 3                          # the refused request was resent once, then no more
+
+
+def test_tools_and_model_override_are_sent_and_cached_separately() -> None:
+    fake = FakeOtari()
+    c = client(fake)
+    plain = c.chat("ddo", "s", "same", purpose="t", tick=0)
+    tooled = c.chat("ddo", "s", "same", purpose="t", tick=0, model="openai/gpt-oss-120b",
+                    tools=[{"type": "otari_code_execution"}])
+    assert plain.status == tooled.status == "ok"    # not served from the plain call's cache entry
+    assert fake.bodies[1]["model"] == "openai/gpt-oss-120b"
+    assert fake.bodies[1]["tools"] == [{"type": "otari_code_execution"}] and "tools" not in fake.bodies[0]
+    assert fake.bodies[1]["max_tokens"] == 120 + 400    # reasoning headroom for gpt-oss
+
+
+def test_hosted_keys_fall_back_to_the_single_otari_key(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from r2r import llm
+    monkeypatch.setattr(llm, "read_dotenv", lambda: {})
+    for name in ("OTARI_API_KEY", *[f"R2R_HOSTED_KEY_{c.upper()}" for c in llm.COHORTS]):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("OTARI_API_KEY", "otk_test_shared")
+    monkeypatch.setenv("R2R_HOSTED_KEY_AMPLIFIER", "otk_test_amplifier")
+    keys = llm.load_keys("hosted")
+    assert keys["villager"] == "otk_test_shared" and keys["amplifier"] == "otk_test_amplifier"
+    assert llm.make_client("hosted").base_url == llm.HOSTED_BASE_URL

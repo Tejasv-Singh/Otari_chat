@@ -18,7 +18,7 @@ import pandas as pd
 from r2r.run import RESULTS
 
 OUTCOMES = ["evacuated_at_risk_share", "caught", "unneeded_evacuations", "rumour_believers_share",
-            "misinfo_tag_rate"]
+            "rumours", "refusals", "misinfo_tag_rate"]
 
 
 def kendall_tau(a: list[str], b: list[str]) -> float:
@@ -42,8 +42,17 @@ def report(runs: pd.DataFrame) -> str:
     if n_seeds == 1:
         lines += ["> One seed per cell: differences are single realisations, not estimates with error bars.", ""]
 
+    if "gateway" in runs.columns:
+        where = runs.groupby("model_set")["gateway"].first()
+        lines += ["Gateway per family: " + ", ".join(
+            f"{m} on {'otari.ai' if g == 'hosted' else 'self-hosted Otari'}" for m, g in where.items()) + ".", ""]
+        if (where == "hosted").any() and (where != "hosted").any():
+            lines += ["> Hosted and local families are not a like-for-like comparison: on otari.ai the cohorts share "
+                      "one key with no per-run budget, so the amplifiers never run out, and no misinformation "
+                      "guardrail is configured there (tag rate 0).", ""]
+
     lines += ["## Outcomes by model family and intervention", ""]
-    table = runs.groupby(["model_set", "scenario_name"])[OUTCOMES].mean().round(3)
+    table = runs.groupby(["model_set", "scenario_name"])[[c for c in OUTCOMES if c in runs.columns]].mean().round(3)
     lines += [table.to_markdown(), ""]
 
     lines += ["## Does the intervention ranking depend on the model?", ""]
@@ -66,13 +75,15 @@ def report(runs: pd.DataFrame) -> str:
     lines += ["## Otari usage per run (mean)", ""]
     cols = [c for c in runs.columns if c.startswith(("tokens_", "cost_", "otari_latency_ms_"))]
     # A replayed sweep's own wall time is the replay's; the live run's time is what matters.
+    cols += [c for c in runs.columns if c.startswith("otari_tool_calls_")]
     cols += ["llm_calls", "cache_hits", "budget_events", "fallbacks",
              "live_wall_s" if "live_wall_s" in runs.columns else "wall_s"]
     lines += [runs.groupby("model_set")[cols].mean().round(6).T.to_markdown(), ""]
     silent = runs.groupby("model_set")["silent_cohorts"].apply(lambda s: sorted(set(",".join(s.fillna("")).split(",")) - {""}))
     lines += ["Cohorts that ran out of their per-run Otari budget: "
               + "; ".join(f"{m}: {', '.join(v) or 'none'}" for m, v in silent.items()), ""]
-    lines += ["Costs are notional (local models priced per size class in otari/config.yml), not real charges.", ""]
+    lines += ["Costs for local families are notional (local models priced per size class in otari/config.yml), "
+              "not real charges. Costs for hosted families are what otari.ai billed.", ""]
     return "\n".join(lines)
 
 

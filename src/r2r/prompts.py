@@ -93,3 +93,34 @@ def parse_reading(text: str) -> Reading:
     believe = min(10.0, float(b.group(1))) / 10 if b else 0.5
     evac = {"yes": 1, "no": -1, "unsure": 0}[e.group(1).lower()] if e else 0
     return Reading(believe, evac, True)
+
+
+SYSTEM_ANALYST = (
+    "You are the analyst of a District Disaster Office in Himachal Pradesh, India. You are given the record of "
+    "a flash-flood response as CSV. Always compute the numbers with the code tool; never estimate them. "
+    "Then write a short after-action report in plain English."
+)
+
+
+def after_action(ticks_csv: str, panchayats_csv: str, flood_tick: int) -> str:
+    return (
+        f"The flash flood hit at tick {flood_tick}.\n\n"
+        f"Per tick:\n{ticks_csv}\n\n"
+        f"Per panchayat at the end:\n{panchayats_csv}\n\n"
+        "Run code on this data to find: (1) the tick with the largest rise in evacuated_share, (2) the share "
+        "evacuated at the flood tick, (3) the panchayat with the most people caught, and (4) the peak "
+        "rumour_believers_share and its tick. Then write the report: four sentences, each stating one of these "
+        "numbers, followed by one sentence recommending what to do differently next time."
+    )
+
+
+# A model that declines to write the message ("I can't fulfill that request.") has written
+# nothing an agent could forward. Seen on otari.ai with meta/llama-3.1-8b-instruct asked for
+# rumours; never in the recorded local qwen3/gemma3 runs.
+_REFUSAL = re.compile(
+    r"^\W*(i\s*(am|'m|’m)?\s*sorry|sorry\b|i\s*can(not|'t|’t|t)\b|i\s*won('t|’t|t)\b"
+    r"|i\s*(am|'m|’m)\s*(unable|not able)\b|i\s*must\s*decline\b)", re.IGNORECASE)
+
+
+def is_refusal(text: str) -> bool:
+    return len(text) < 240 and bool(_REFUSAL.match(text))

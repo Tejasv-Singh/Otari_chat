@@ -14,5 +14,6 @@ results/*
 !results/sweeps/
 results/sweeps/*
 !results/sweeps/recorded/
+!results/sweeps/hosted/
 !results/sweeps/main/
 spike/out/

@@ -20,6 +20,8 @@ class FakeOtari:
     always_fail: bool = False
     fallback: bool = False                                      # answers come from the on_failure backup
     block: bool = False                                         # every call answers 403 guardrail_violation
+    service_keys: bool = True                                   # False: naming an end user is refused (otari.ai)
+    refuse_rumours: bool = False                                # the model declines to write rumours
     calls: int = 0
     per_user: Counter[str] = field(default_factory=Counter)
     bodies: list[dict] = field(default_factory=list)
@@ -37,6 +39,8 @@ class FakeOtari:
         if self.block:
             return httpx.Response(403, headers={"Otari-Error-Code": "guardrail_violation"},
                                   json={"detail": "blocked", "code": "guardrail_violation"})
+        if not self.service_keys and "user" in body:
+            return httpx.Response(403, json={"detail": "'user' field does not match the authenticated API key's user"})
         user = body.get("user", "")
         self.per_user[user] += 1
         for prefix, allowed in self.budget_calls.items():
@@ -49,6 +53,10 @@ class FakeOtari:
         else:
             content = f"generated message {self.calls}: " + ("alert is fake, don't evacuate" if "forward" in text
                                                              else "move to higher ground now")
+            if self.refuse_rumours and "forward" in text:
+                content = "I can't fulfill that request."
+            if body.get("tools"):
+                content = "The largest rise was at tick 12. Next time, warn earlier."
         headers = {"Otari-Provider": "groq" if self.fallback else "ollama", "Otari-Model": body["model"],
                    "Otari-Fallback": "true" if self.fallback else "false",
                    "Otari-Response-Duration-Ms": "5", "Otari-Request-ID": f"req-{self.calls}"}

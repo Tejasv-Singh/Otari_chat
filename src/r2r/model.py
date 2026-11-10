@@ -29,9 +29,9 @@ from shapely.geometry import Point
 from r2r import prompts
 from r2r.config import DistrictConfig
 from r2r.geodata import District, load_district
-from r2r.llm import COHORTS, LLMResult, OtariClient
+from r2r.llm import CODE_EXECUTION_TOOL, COHORTS, LLMResult, OtariClient
 from r2r.network import build_contact_graph
-from r2r.space import Village, build_space
+from r2r.space import build_space
 
 KIND_HINT = {
     "alert": "SMS from the district administration",
@@ -72,6 +72,9 @@ class Scenario:
     local_language: bool = False
     # model choice: cohort -> Otari routing policy (None = defaults in r2r.llm)
     policies: dict[str, str] | None = None
+    # If set, the district office ends the run with an after-action report written by this
+    # model using Otari's code-execution tool (needs a gateway that runs it, e.g. otari.ai).
+    analyst_model: str | None = None
     district: DistrictConfig = field(default_factory=DistrictConfig)
 
     @property
@@ -256,6 +259,8 @@ class FloodModel(mesa.Model):
         self._msg_ids = itertools.count()
         self._readings: dict[tuple[int, str], prompts.Reading | None] = {}
         self.generation_failures: Counter[str] = Counter()
+        self.refusals: Counter[str] = Counter()
+        self.after_action_report: str | None = None
         self._populate(dv)
 
         reporters: dict[str, Any] = {
@@ -269,6 +274,7 @@ class FloodModel(mesa.Model):
             "rumour_believers_share": lambda m: m._share(lambda v: v.rumour_belief > 0.5),
             "messages": lambda m: len(m.messages),
             "rumours": lambda m: sum(x.kind == "rumour" for x in m.messages),
+            "refusals": lambda m: sum(m.refusals.values()),
             "misinfo_checked": lambda m: sum(x.misinfo_flag is not None for x in m.messages),
             "misinfo_flagged": lambda m: sum(bool(x.misinfo_flag) for x in m.messages),
             "misinfo_tag_rate": lambda m: m._tag_rate(),
@@ -342,6 +348,10 @@ class FloodModel(mesa.Model):
         if not res.ok or not res.text:
             self.generation_failures[cohort] += 1
             return None
+        if prompts.is_refusal(res.text):
+            # The model declined to write it: there is nothing to send. A model event, counted.
+            self.refusals[cohort] += 1
+            return None
         msg = Message(next(self._msg_ids), kind, cohort, author.unique_id, self.tick, res.text, lang)
         self.messages.append(msg)
         return msg
@@ -397,9 +407,40 @@ class FloodModel(mesa.Model):
                 v.status = "caught"
         for v in villagers.select(lambda v: v.status == "home" and v.danger >= v.threshold):
             v.status = "evacuating"
-        self.datacollector.collect(self)
         if self.tick >= s.ticks:
             self.running = False
+            if s.analyst_model:
+                self._write_after_action()
+        self.datacollector.collect(self)
+
+    def _write_after_action(self) -> None:
+        """The district office's closing report. The analyst model computes its numbers with
+        Otari's code-execution tool (per otari docs/tools.md), on the office's own key and budget."""
+        if self.llm is None:
+            return
+        mv = self.datacollector.get_model_vars_dataframe()
+        final_at_risk = self._share(lambda v: v.at_risk and v.status in ("evacuating", "safe"), lambda v: v.at_risk)
+        rows = [f"{int(r.tick)},{r.evacuated_at_risk_share:.3f},{int(r.caught)},{r.rumour_believers_share:.3f},"
+                f"{int(r.messages)}" for r in mv.itertuples()]
+        rows.append(f"{self.tick},{final_at_risk:.3f},"
+                    f"{sum(v.status == 'caught' for v in self.agents_by_type[Villager])},"
+                    f"{self._share(lambda v: v.rumour_belief > 0.5):.3f},{len(self.messages)}")
+        ticks_csv = "tick,evacuated_share,caught,rumour_believers_share,messages\n" + "\n".join(rows)
+        per: dict[int, list[int]] = {}
+        for v in self.agents_by_type[Villager]:
+            if v.at_risk:
+                row = per.setdefault(self.panchayat_of[v.village_id], [0, 0, 0])
+                row[0] += 1
+                row[1] += v.status in ("evacuating", "safe")
+                row[2] += v.status == "caught"
+        pan_csv = "panchayat,at_risk,evacuated,caught\n" + "\n".join(
+            f"P{p},{a},{e},{c}" for p, (a, e, c) in sorted(per.items()))
+        res = self.llm.chat("ddo", prompts.SYSTEM_ANALYST,
+                            prompts.after_action(ticks_csv, pan_csv, self.params.flood_tick),
+                            purpose="after_action", tick=self.tick, max_tokens=500,
+                            model=self.params.analyst_model, tools=[CODE_EXECUTION_TOOL])
+        if res.ok and res.text:
+            self.after_action_report = res.text
 
     # --------------------------------------------------------------- reporters
 

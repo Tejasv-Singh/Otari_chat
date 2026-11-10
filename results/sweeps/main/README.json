@@ -11,6 +11,24 @@
    "amplifier": "villager-gemma",
    "official": "official-gemma",
    "ddo": "official-gemma"
+  },
+  "llama-hosted": {
+   "villager": "meta/llama-3.1-8b-instruct",
+   "amplifier": "meta/llama-3.1-8b-instruct",
+   "official": "meta/llama-3.3-70b-instruct",
+   "ddo": "meta/llama-3.3-70b-instruct"
+  },
+  "gptoss-hosted": {
+   "villager": "openai/gpt-oss-20b",
+   "amplifier": "openai/gpt-oss-20b",
+   "official": "openai/gpt-oss-120b",
+   "ddo": "openai/gpt-oss-120b"
+  },
+  "routed-hosted": {
+   "villager": "r2r-villager",
+   "amplifier": "r2r-villager",
+   "official": "r2r-official",
+   "ddo": "r2r-official"
   }
  },
  "scenarios": {

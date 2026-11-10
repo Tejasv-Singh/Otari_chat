@@ -1,0 +1,54 @@
+{
+ "models": {
+  "qwen3": {
+   "villager": "villager",
+   "amplifier": "villager",
+   "official": "official",
+   "ddo": "official"
+  },
+  "gemma3": {
+   "villager": "villager-gemma",
+   "amplifier": "villager-gemma",
+   "official": "official-gemma",
+   "ddo": "official-gemma"
+  },
+  "llama-hosted": {
+   "villager": "meta/llama-3.1-8b-instruct",
+   "amplifier": "meta/llama-3.1-8b-instruct",
+   "official": "meta/llama-3.3-70b-instruct",
+   "ddo": "meta/llama-3.3-70b-instruct"
+  },
+  "gptoss-hosted": {
+   "villager": "openai/gpt-oss-20b",
+   "amplifier": "openai/gpt-oss-20b",
+   "official": "openai/gpt-oss-120b",
+   "ddo": "openai/gpt-oss-120b"
+  },
+  "routed-hosted": {
+   "villager": "r2r-villager",
+   "amplifier": "r2r-villager",
+   "official": "r2r-official",
+   "ddo": "r2r-official"
+  }
+ },
+ "scenarios": {
+  "baseline": {},
+  "sms_alert": {
+   "sms_alert": true
+  },
+  "fact_check": {
+   "fact_check": true
+  },
+  "local_language": {
+   "local_language": true
+  },
+  "all": {
+   "sms_alert": true,
+   "fact_check": true,
+   "local_language": true
+  }
+ },
+ "seeds": [
+  42
+ ]
+}

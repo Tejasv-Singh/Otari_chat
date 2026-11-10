@@ -13,6 +13,7 @@ import argparse
 import dataclasses
 import json
 import logging
+import re
 import time
 from pathlib import Path
 from typing import Any
@@ -41,6 +42,19 @@ def preflight(client: OtariClient) -> None:
         raise GatewayUnavailable(f"Otari health check failed: HTTP {r.status_code}")
 
 
+_EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+
+
+def _without_emails(obj: Any) -> Any:
+    """otari.ai labels usage rows with the account's email address. Results are committed
+    and published, so no address is ever written to disk."""
+    if isinstance(obj, dict):
+        return {k: _without_emails(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_without_emails(v) for v in obj]
+    return _EMAIL.sub("<account>", obj) if isinstance(obj, str) else obj
+
+
 def run_scenario(scenario: Scenario, client: OtariClient | None = None, out_root: Path = RESULTS,
                  save: bool = True) -> dict[str, Any]:
     client = client or OtariClient(load_keys())
@@ -66,13 +80,15 @@ def run_scenario(scenario: Scenario, client: OtariClient | None = None, out_root
         "villagers": len(model.agents_by_type[Villager]),
         "agents": len(model.agents) - len(model.village_agents),
         **{k: final[k] for k in ("evacuated_at_risk_share", "caught", "unneeded_evacuations",
-                                 "rumour_believers_share", "messages", "rumours", "misinfo_tag_rate",
+                                 "rumour_believers_share", "messages", "rumours", "refusals", "misinfo_tag_rate",
                                  "llm_calls", "cache_hits", "budget_events", "upstream_errors", "fallbacks",
                                  "silent_cohorts")},
         # A run where many calls never reached a model measures the outage, not the models.
         "replay": client.replay,
         "replay_misses": client.replay_misses,
         "valid": client.replay_misses == 0 and bool(final["upstream_errors"] <= 0.1 * max(1, final["llm_calls"] + final["upstream_errors"])),
+        "gateway": client.gateway,
+        "after_action_report": model.after_action_report,
         "tokens": {c: final[f"tokens_{c}"] for c in COHORTS},
         "cost_usd_notional": {c: final[f"cost_{c}"] for c in COHORTS},
     }
@@ -86,9 +102,14 @@ def run_scenario(scenario: Scenario, client: OtariClient | None = None, out_root
                                            encoding="utf-8")
         pd.DataFrame([dataclasses.asdict(r) for r in client.log]).to_parquet(out / "llm_calls.parquet")
         # Replayed runs never reach Otari; their gateway usage is the recorded live run's.
-        usage = {} if client.replay else {c: client.key_usage(c) for c in COHORTS}
+        usage = {} if client.replay else {c: _without_emails(client.key_usage(c)) for c in COHORTS}
         (out / "otari_usage.json").write_text(json.dumps(usage, indent=1), encoding="utf-8")
         summary["otari_usage_totals"] = {c: (u.get("totals") or {}) for c, u in usage.items()}
+        # Built-in tools Otari ran for each cohort (e.g. code_execution), from its usage API.
+        summary["otari_tool_calls"] = {c: sum(t.get("calls", 0) for t in (u.get("by_tool") or []))
+                                       for c, u in usage.items()}
+        if model.after_action_report:
+            (out / "after_action.md").write_text(model.after_action_report + "\n", encoding="utf-8")
         (out / "summary.json").write_text(json.dumps(summary, indent=1, default=str), encoding="utf-8")
         summary["out_dir"] = str(out)
     return summary
@@ -103,6 +124,9 @@ def main() -> None:
     ap.add_argument("--local-language", action="store_true")
     ap.add_argument("--villager-policy", default=None, help="Otari routing policy for villagers/amplifiers")
     ap.add_argument("--official-policy", default=None, help="Otari routing policy for officials/DDO")
+    ap.add_argument("--model-set", default=None,
+                    help="a model family from r2r.experiments.MODEL_SETS, e.g. llama-hosted or gptoss-hosted "
+                         "(those run through otari.ai, see HOSTED.md); overrides the two policy flags")
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -113,7 +137,14 @@ def main() -> None:
         policies |= {"official": args.official_policy, "ddo": args.official_policy}
     sc = Scenario(seed=args.seed, ticks=args.ticks, sms_alert=args.sms_alert, fact_check=args.fact_check,
                   local_language=args.local_language, policies=policies or None)
-    print(json.dumps(run_scenario(sc), indent=1, default=str))
+    client = None
+    if args.model_set:
+        from r2r.experiments import GATEWAY, scenario_for   # imported here: experiments imports this module
+        from r2r.llm import make_client
+        sc = scenario_for(args.model_set, "baseline", args.seed, ticks=args.ticks, sms_alert=args.sms_alert,
+                          fact_check=args.fact_check, local_language=args.local_language)
+        client = make_client(GATEWAY[args.model_set])
+    print(json.dumps(run_scenario(sc, client), indent=1, default=str))
 
 
 if __name__ == "__main__":

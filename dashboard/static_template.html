@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rumour-to-Relief</title>
-<meta name="description" content="Agent-based simulation of flood alerts and misinformation in Kullu district, driven by open-weight models through a self-hosted Otari gateway. Recorded runs.">
+<meta name="description" content="Agent-based simulation of flood alerts and misinformation in Kullu district, driven by open-weight models through Otari, self-hosted and on otari.ai. Recorded runs.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -14,7 +14,8 @@
   --accent: #3b6fd8; --accent-ink: #ffffff;
   --home: #8a94a6; --evacuating: #e0a100; --safe: #1f9d55; --caught: #d64545;
   --rumour: #d6457a; --official: #7c4dcc; --amplifier: #d6457a; --ddo: #222222;
-  --qwen3: #3b6fd8; --gemma3: #e0a100; --water: #2f7fd1;
+  --qwen3: #3b6fd8; --gemma3: #e0a100; --llama-hosted: #7c4dcc; --gptoss-hosted: #1f9d8f; --routed-hosted: #d6457a;
+  --water: #2f7fd1;
   --chip: #eef1f5; --flag-bg: #fdecef; --flag-ink: #a3213f;
 }
 @media (prefers-color-scheme: dark) {
@@ -101,8 +102,8 @@ footer a, .note a { color: var(--accent); }
     <h1>Rumour-to-Relief <span class="badge">recorded runs · replayed offline</span></h1>
     <p>A monsoon flash flood in <b id="district">Kullu</b>, Himachal Pradesh. Villagers, panchayat officials,
       WhatsApp-style rumour amplifiers and the district disaster office talk through small open-weight models
-      behind a self-hosted Otari gateway. Does the model that drives the agents change which intervention
-      looks best?</p>
+      through Otari: a self-hosted gateway for the local model families, and otari.ai for the hosted ones.
+      Does the model that drives the agents change which intervention looks best?</p>
   </header>
 
   <div class="controls" role="group" aria-label="Run selection">
@@ -136,8 +137,13 @@ footer a, .note a { color: var(--accent); }
 
   <div class="charts">
     <div class="card"><h2>Belief over time</h2><div class="chartbox"><canvas id="c-belief"></canvas></div></div>
-    <div class="card"><h2>Notional cost per cohort <small>USD, cumulative</small></h2><div class="chartbox"><canvas id="c-cost"></canvas></div></div>
+    <div class="card"><h2>Cost per cohort <small>USD, cumulative</small></h2><div class="chartbox"><canvas id="c-cost"></canvas></div></div>
     <div class="card"><h2>Guardrail tag rate</h2><div class="chartbox"><canvas id="c-tag"></canvas></div></div>
+  </div>
+
+  <div class="card" id="afteraction" hidden style="margin-top:16px">
+    <h2>After-action report <small>written by the district office's analyst model; Otari's code-execution tool computed the numbers</small></h2>
+    <p id="aa-text" style="white-space:pre-wrap;margin:0"></p>
   </div>
 
   <section class="compare">
@@ -163,10 +169,12 @@ footer a, .note a { color: var(--accent); }
   </section>
 
   <footer>
-    <p>Recorded runs, replayed offline. Every model call in these runs went live through a self-hosted
-      <a href="https://github.com/mozilla-ai/otari">Otari</a> gateway: one virtual key per cohort, per-run token
-      budgets, a routing policy per model family, and a misinformation guardrail on every interpretation. The page
-      replays those answers call for call, so no gateway is needed to view it.</p>
+    <p>Recorded runs, replayed offline. Every model call in these runs went live through
+      <a href="https://github.com/mozilla-ai/otari">Otari</a>. The local families ran on a self-hosted gateway with
+      one virtual key per cohort, per-run token budgets, a routing policy per family and a misinformation guardrail
+      on every interpretation. The hosted families ran on otari.ai, where the district office also closes each run
+      with a report computed by Otari's code-execution tool. The page replays those answers call for call, so no
+      gateway is needed to view it.</p>
     <p>Movement and belief rules are hand-written and calibrated only against plausibility targets for the
       official warning channel; costs are notional prices on local models, not charges. Map data © OpenStreetMap
       contributors. Generated <span id="generated"></span>.</p>
@@ -202,7 +210,8 @@ footer a, .note a { color: var(--accent); }
     el.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; state[key] = b.dataset.v; sync(); save(); onChange(); });
     sync();
   }
-  seg("fam", FAMS.map(f => [f, f]), "fam", () => loadRun());
+  const HOSTED = f => (D.gateway || {})[f] === "hosted";
+  seg("fam", FAMS.map(f => [f, f.replace("-hosted", "") + (HOSTED(f) ? " · otari.ai" : "")]), "fam", () => loadRun());
   seg("scen", D.scenarios.map(s => [s, LABEL[s] || s]), "scen", () => loadRun());
   seg("colour", [["status", "Status"], ["danger", "Perceived danger"], ["rumour", "Rumour belief"]], "colour", () => drawTick());
   const slider = document.getElementById("tick"), playBtn = document.getElementById("play");
@@ -261,7 +270,10 @@ footer a, .note a { color: var(--accent); }
     r.others.forEach(o => L.circleMarker(o.pos, { radius: 6.5, weight: 1.5, color: "#fff", fillColor: css("--" + o.kind), fillOpacity: 1 })
       .bindTooltip(`${kindName[o.kind]}${vname[o.village] ? " · " + esc(vname[o.village].name) : ""}`).addTo(othersLayer));
     const fam = D.models[state.fam] || {};
-    document.getElementById("mapsub").textContent = `· ${state.fam}: villagers on ${fam.villager || "?"}, officials on ${fam.official || "?"}`;
+    document.getElementById("mapsub").textContent = `· ${HOSTED(state.fam) ? "otari.ai" : "self-hosted Otari"}: villagers on ${fam.villager || "?"}, officials on ${fam.official || "?"}`;
+    const aa = document.getElementById("afteraction");
+    aa.hidden = !r.after_action;
+    if (r.after_action) document.getElementById("aa-text").textContent = r.after_action.trim();
     drawCharts(); drawUsage(); drawTick();
   }
 
@@ -294,7 +306,8 @@ footer a, .note a { color: var(--accent); }
     document.getElementById("k-rumour").textContent = pct(ser.rumour_believers_share[t]);
     document.getElementById("k-tag").textContent = pct(ser.misinfo_tag_rate[t]);
     const msgs = r.messages.filter(m => m.tick <= t).slice().reverse();
-    document.getElementById("msgcount").textContent = `· ${msgs.length} written by the models`;
+    const refused = (ser.refusals || [])[t] || 0;
+    document.getElementById("msgcount").textContent = `· ${msgs.length} written by the models` + (refused ? `, ${refused} refused` : "");
     document.getElementById("feed").innerHTML = msgs.length ? msgs.map(m => `<div class="msg"><div class="meta">
         <span class="chip">t${m.tick}</span><span class="chip">${esc(m.kind)}</span><span class="chip">${esc(m.cohort)}</span><span class="chip">${esc(m.lang)}</span>
         ${m.misinfo_flag ? '<span class="chip flag">tagged misinformation</span>' : ""} reach ${m.reach}</div>
@@ -356,14 +369,20 @@ footer a, .note a { color: var(--accent); }
   const avg = (f, col) => { const xs = D.sweep.filter(r => r.model_set === f).map(r => r[col]); return xs.reduce((a, b) => a + b, 0) / xs.length; };
   const eff = (f, s) => { const g = r => (D.sweep.find(x => x.model_set === f && x.scenario_name === r) || {}).evacuated_at_risk_share;
     return Math.round((g(s) - g("baseline")) * 100); };
-  if (FAMS.length === 2) {
-    const [a, b] = FAMS;
+  if (FAMS.length >= 2) {
+    const list = fn => FAMS.map(f => `${fn(f)} (${esc(f)})`).join(", ");
+    const tops = [...new Set(top)];
+    const taus = (D.pairs || []).map(p => p.tau);
+    const sum = (f, col) => D.sweep.filter(r => r.model_set === f).reduce((a, r) => a + (r[col] || 0), 0);
+    const refusers = FAMS.filter(f => sum(f, "refusals") > 0);
     document.getElementById("verdict").innerHTML =
-      `Both model families pick the same best intervention (${esc(LABEL[top[0]] || top[0])})${top[0] === top[1] ? "" : " — no: they differ"}, `
-      + `and the rankings mostly agree (Kendall τ = ${D.kendall_tau}). The <b>size</b> of each effect does not: the SMS alert adds `
-      + `${eff(a, "sms_alert")} points with ${esc(a)} and ${eff(b, "sms_alert")} with ${esc(b)}; local-language messaging adds `
-      + `${eff(a, "local_language")} and ${eff(b, "local_language")}. Rumour belief is the clearest model effect: on average `
-      + `${pct(avg(a, "rumour_believers_share"))} of villagers believe a rumour with ${esc(a)}, ${pct(avg(b, "rumour_believers_share"))} with ${esc(b)}.`;
+      `${FAMS.length} open-weight model families, ${FAMS.filter(HOSTED).length} of them through otari.ai. `
+      + (tops.length === 1 ? `All pick the same best intervention (${esc(LABEL[tops[0]] || tops[0])}). `
+                           : `They do <b>not</b> agree on the best intervention: ${list(f => esc(LABEL[D.ranking[f][0]] || D.ranking[f][0]))}. `)
+      + (taus.length ? `Rank agreement between pairs of families (Kendall τ) runs from ${Math.min(...taus)} to ${Math.max(...taus)}. ` : "")
+      + `The <b>size</b> of each effect depends on the model: the SMS alert changes evacuation by ${list(f => eff(f, "sms_alert") + " points")}. `
+      + `Villagers who believe a rumour, averaged over scenarios: ${list(f => pct(avg(f, "rumour_believers_share")))}.`
+      + (refusers.length ? ` Some models will not play the rumour-monger: ${refusers.map(f => `${esc(f)} refused ${sum(f, "refusals")} of ${sum(f, "refusals") + sum(f, "rumours")} rumour requests`).join("; ")}.` : "");
   }
 
   function drawUsage() {
@@ -371,12 +390,14 @@ footer a, .note a { color: var(--accent); }
     const t = document.getElementById("usage"), note = document.getElementById("usagenote");
     if (!row) { t.innerHTML = ""; note.textContent = "No recorded live run for this cell."; return; }
     const f = (v, d = 0) => v == null ? "–" : Number(v).toLocaleString(undefined, { maximumFractionDigits: d });
-    t.innerHTML = "<tr><th>cohort</th><th>requests</th><th>tokens</th><th>avg latency</th><th>notional $</th></tr>"
+    t.innerHTML = "<tr><th>cohort</th><th>requests</th><th>tokens</th><th>avg latency</th><th>cost $</th></tr>"
       + COHORTS.map(c => `<tr><td>${c}</td><td>${f(row["otari_requests_" + c])}</td><td>${f(row["otari_tokens_" + c] ?? row["tokens_" + c])}</td>`
         + `<td>${row["otari_latency_ms_" + c] == null ? "–" : f(row["otari_latency_ms_" + c] / 1000, 1) + " s"}</td><td>${f(row["cost_" + c], 6)}</td></tr>`).join("");
-    note.innerHTML = `Live run <code>${esc(row.live_run_id || "?")}</code> took ${f(row.live_wall_s)} s on a laptop CPU. `
+    const tools = COHORTS.reduce((a, c) => a + (row["otari_tool_calls_" + c] || 0), 0);
+    note.innerHTML = `Live run <code>${esc(row.live_run_id || "?")}</code> on ${HOSTED(state.fam) ? "otari.ai" : "self-hosted Otari (laptop CPU)"} took ${f(row.live_wall_s)} s. `
       + `Budget events: ${f(row.budget_events)} (silent: ${esc(row.silent_cohorts || "none")}). Upstream errors: ${f(row.upstream_errors)}. `
-      + `Failovers to the cloud backup: ${f(row.fallbacks)}. Per-cohort numbers come from Otari's own usage API.`;
+      + `Failovers: ${f(row.fallbacks)}. Code-execution calls run by Otari: ${f(tools)}. `
+      + `Per-cohort numbers come from Otari's own usage API` + (HOSTED(state.fam) ? "; costs are otari.ai charges." : "; costs are notional prices on local models.");
   }
 
   loadRun();

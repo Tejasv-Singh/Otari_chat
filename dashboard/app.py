@@ -14,21 +14,22 @@ and data/cache/llm/prompts.jsonl (the live sweep).
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import solara
 from matplotlib.figure import Figure
 from mesa.visualization import SolaraViz, make_plot_component
 from mesa.visualization.utils import update_counter
 from mesa_geo.visualization import make_geospace_component
 
-from r2r.experiments import MODEL_SETS, SCENARIOS
+from r2r.experiments import GATEWAY, MODEL_SETS, SCENARIOS
 from r2r.model import Amplifier, DistrictDisasterOffice, FloodModel, PanchayatOfficial, Villager
-from r2r.viewer import recorded_runs, replay_scenario
+from r2r.viewer import recorded_families, recorded_runs, replay_scenario
 from r2r.space import Village
 
 # Status colours (also used by the static export, docs/index.html).
 STATUS_COLOUR = {"home": "#8a94a6", "evacuating": "#e0a100", "safe": "#1f9d55", "caught": "#d64545"}
 COHORT_COLOUR = {"villager": "#3b6fd8", "official": "#7c4dcc", "amplifier": "#d6457a", "ddo": "#222222"}
+FAMILY_COLOUR = {"qwen3": "#3b6fd8", "gemma3": "#e0a100", "llama-hosted": "#7c4dcc", "gptoss-hosted": "#1f9d8f",
+                 "routed-hosted": "#d6457a"}
 
 
 class ReplayFloodModel(FloodModel):
@@ -77,8 +78,9 @@ def Header(model: ReplayFloodModel) -> None:
     phase = ("before the warning" if model.tick < p.warning_tick else "warning issued" if model.tick < p.rising_tick
              else "river rising" if model.tick < p.flood_tick else "flash flood")
     run = model.llm.replay_run if model.llm else None
+    where = "otari.ai" if GATEWAY.get(model.model_family) == "hosted" else "self-hosted Otari"
     solara.Markdown(
-        f"### {model.model_family} · {p.label} · tick {model.tick}/{p.ticks} ({phase})\n"
+        f"### {model.model_family} ({where}) · {p.label} · tick {model.tick}/{p.ticks} ({phase})\n"
         f"**{mv.evacuated_at_risk_share:.0%}** of at-risk villagers out · **{int(mv.caught)}** caught · "
         f"**{mv.rumour_believers_share:.0%}** believe a rumour · guardrail tag rate "
         f"**{mv.misinfo_tag_rate:.0%}** · silent cohorts: {mv.silent_cohorts or 'none'}\n\n"
@@ -98,7 +100,12 @@ def Header(model: ReplayFloodModel) -> None:
 def Messages(model: ReplayFloodModel) -> None:
     update_counter.get()
     msgs = model.messages_table()[-8:][::-1]
-    lines = ["#### Latest messages (model-written)"]
+    lines = []
+    if model.after_action_report:
+        lines += ["#### After-action report (numbers computed with Otari's code-execution tool)",
+                  model.after_action_report, ""]
+    refused = sum(model.refusals.values())
+    lines.append("#### Latest messages (model-written)" + (f" · {refused} requests refused by the model" if refused else ""))
     if not msgs:
         lines.append("_No messages yet._")
     for m in msgs:
@@ -121,7 +128,8 @@ def ModelComparison(model: ReplayFloodModel) -> None:
                                                       ("rumour_believers_share", "Villagers believing a rumour"),
                                                       ("misinfo_tag_rate", "Guardrail tag rate")]):
         piv = runs.pivot_table(index="scenario_name", columns="model_set", values=col).reindex(order)
-        piv.plot.bar(ax=ax, rot=30, width=0.75, color=["#3b6fd8", "#e0a100"][: len(piv.columns)])
+        piv = piv[[f for f in MODEL_SETS if f in piv.columns]]
+        piv.plot.bar(ax=ax, rot=30, width=0.8, color=[FAMILY_COLOUR.get(f, "#888888") for f in piv.columns])
         ax.set_title(title, fontsize=10)
         ax.set_xlabel("")
         ax.set_ylim(0, 1 if col != "misinfo_tag_rate" else max(0.1, float(piv.max().max()) * 1.3))
@@ -138,7 +146,9 @@ def ModelComparison(model: ReplayFloodModel) -> None:
 
 
 model_params = {
-    "model_family": {"type": "Select", "value": "qwen3", "values": list(MODEL_SETS), "label": "Model family"},
+    # Only families with a recorded live run can be replayed (self-hosted and otari.ai sweeps).
+    "model_family": {"type": "Select", "value": "qwen3", "values": recorded_families() or list(MODEL_SETS),
+                     "label": "Model family"},
     "intervention": {"type": "Select", "value": "baseline", "values": list(SCENARIOS), "label": "Intervention"},
     "seed": 42,
 }

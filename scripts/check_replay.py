@@ -19,12 +19,11 @@ results/replay_check/ and are NOT merged into the shared replay cache.
 from __future__ import annotations
 
 import argparse
-import dataclasses
 import json
 
 import pandas as pd
 
-from r2r.experiments import MODEL_SETS, SCENARIOS
+from r2r.experiments import MODEL_SETS, scenario_for
 from r2r.llm import OtariClient, load_keys
 from r2r.model import FloodModel, Scenario
 from r2r.run import RESULTS, run_scenario
@@ -41,8 +40,9 @@ def check_recorded(name: str) -> bool:
     all_ok = True
     for row in pd.read_parquet(d / "runs.parquet").itertuples():
         live = pd.read_parquet(d / row.run_id / "llm_calls.parquet")
-        sc = dataclasses.replace(Scenario(seed=int(row.seed)), policies=MODEL_SETS[row.model_set],
-                                 **SCENARIOS[row.scenario_name], **PRE_CALIBRATION)
+        # Only the first live sweep predates calibration; later ones ran with the current defaults.
+        sc = scenario_for(row.model_set, row.scenario_name, int(row.seed),
+                          **(PRE_CALIBRATION if name == "recorded" else {}))
         c = OtariClient(keys, policies=MODEL_SETS[row.model_set], replay=True, replay_run=row.run_id)
         m = FloodModel(sc, llm=c)
         while m.running:
@@ -64,7 +64,7 @@ def check_live(sms_alert: bool) -> bool:
 
     rec = pd.read_parquet(RESULTS / "sweeps" / "recorded" / "runs.parquet")
     hit = rec[(rec.model_set == "qwen3") & (rec.scenario_name == ("sms_alert" if sms_alert else "baseline"))]
-    a = run_scenario(sc, OtariClient(keys, replay=True, replay_run=hit.run_id.iloc[-1]), save=False)
+    a = run_scenario(sc, OtariClient({}, replay=True, replay_run=hit.run_id.iloc[-1]), save=False)
     live = OtariClient(keys, cache_path=live_log)
     b = run_scenario(sc, live, out_root=out)
     c = run_scenario(sc, OtariClient(keys, replay=True, replay_run=live.run_id, cache_path=live_log), save=False)

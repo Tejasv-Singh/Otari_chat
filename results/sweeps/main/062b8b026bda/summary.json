@@ -1,0 +1,47 @@
+{
+ "run_id": "062b8b026bda",
+ "scenario": "sms_alert+fact_check+local_language",
+ "policies": {
+  "villager": "meta/llama-3.1-8b-instruct",
+  "amplifier": "meta/llama-3.1-8b-instruct",
+  "official": "meta/llama-3.3-70b-instruct",
+  "ddo": "meta/llama-3.3-70b-instruct"
+ },
+ "seed": 42,
+ "wall_s": 0.2,
+ "villagers": 80,
+ "agents": 95,
+ "evacuated_at_risk_share": 0.4688,
+ "caught": 17,
+ "unneeded_evacuations": 9,
+ "rumour_believers_share": 0.2,
+ "messages": 73,
+ "rumours": 12,
+ "refusals": 24,
+ "misinfo_tag_rate": 0.0,
+ "llm_calls": 147,
+ "cache_hits": 125,
+ "budget_events": 0,
+ "upstream_errors": 0,
+ "fallbacks": 0,
+ "silent_cohorts": "",
+ "replay": true,
+ "replay_misses": 0,
+ "valid": true,
+ "gateway": "local",
+ "after_action_report": "The largest rise in evacuated\u202fshare occurred at tick\u202f3, where the share jumped by\u202f0.125.  \nAt the flood tick (tick\u202f14) the evacuated\u202fshare was\u202f0.469 (46.9\u202f%).  \nPanchayat\u202fP6 had the most people caught, with\u202f7 individuals.  \nThe peak rumour\u2011believers share was\u202f0.20 (20\u202f%) and it was reached at tick\u202f15.  \n\n**Recommendation:**\u202fFuture response plans should aim to accelerate evacuation before the early\u2011stage rise (around tick\u202f3) and strengthen communication to curb rumours, thereby reducing the number of people caught in floods.",
+ "tokens": {
+  "villager": 17346,
+  "official": 4166,
+  "amplifier": 5296,
+  "ddo": 6438
+ },
+ "cost_usd_notional": {
+  "villager": 0.003813,
+  "official": 0.003001,
+  "amplifier": 0.001166,
+  "ddo": 0.010588
+ },
+ "otari_usage_totals": {},
+ "otari_tool_calls": {}
+}

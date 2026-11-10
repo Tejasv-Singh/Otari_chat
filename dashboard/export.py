@@ -13,13 +13,14 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import itertools
 import json
 from pathlib import Path
 
 
 from r2r.analyze import kendall_tau, rank_interventions
-from r2r.experiments import MODEL_SETS, SCENARIOS
-from r2r.viewer import capture, geography, make_model, recorded_runs, sweep_table
+from r2r.experiments import GATEWAY, MODEL_SETS, SCENARIOS
+from r2r.viewer import capture, geography, make_model, recorded_families, recorded_runs, sweep_table
 
 HERE = Path(__file__).resolve().parent
 TEMPLATE = HERE / "static_template.html"
@@ -29,7 +30,8 @@ PLACEHOLDER = "/*__R2R_DATA__*/null"
 
 def build_payload(sweep: str = "main") -> dict:
     runs, geo = {}, None
-    for fam in MODEL_SETS:
+    families = recorded_families()
+    for fam in families:
         for scen in SCENARIOS:
             m = make_model(fam, scen)
             geo = geo or geography(m)
@@ -38,19 +40,26 @@ def build_payload(sweep: str = "main") -> dict:
                   f"misses={runs[f'{fam}/{scen}']['replay_misses']}", flush=True)
     sw = recorded_runs(sweep)
     ranks = {f: rank_interventions(d) for f, d in sw.groupby("model_set")} if not sw.empty else {}
-    fams = list(ranks)
-    tau = kendall_tau(ranks[fams[0]], ranks[fams[1]]) if len(fams) == 2 else None
+    fams = [f for f in families if f in ranks]
+    pairs = [{"a": a, "b": b, "tau": kendall_tau(ranks[a], ranks[b]), "same_top": ranks[a][0] == ranks[b][0]}
+             for a, b in itertools.combinations(fams, 2)]
+    # What each family runs: local policies resolve to these Ollama models (otari/config.yml);
+    # hosted families send otari.ai catalog ids directly.
+    models = {"qwen3": {"villager": "qwen3:1.7b", "official": "qwen3:4b-instruct"},
+              "gemma3": {"villager": "gemma3:1b", "official": "gemma3:4b"}}
+    for f in families:
+        models.setdefault(f, {"villager": MODEL_SETS[f]["villager"], "official": MODEL_SETS[f]["official"]})
     return {
         "generated": dt.date.today().isoformat(),
-        "families": {f: {c: p for c, p in pol.items()} for f, pol in MODEL_SETS.items()},
-        "models": {"qwen3": {"villager": "qwen3:1.7b", "official": "qwen3:4b-instruct"},
-                   "gemma3": {"villager": "gemma3:1b", "official": "gemma3:4b"}},
+        "families": {f: MODEL_SETS[f] for f in families},
+        "gateway": {f: GATEWAY[f] for f in families},
+        "models": models,
+        "pairs": pairs,
         "scenarios": list(SCENARIOS),
         "geo": geo,
         "runs": runs,
         "sweep": sweep_table(sweep),
-        "ranking": ranks,
-        "kendall_tau": tau,
+        "ranking": {f: ranks[f] for f in fams},
     }
 
 

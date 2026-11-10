@@ -1,0 +1,47 @@
+{
+ "run_id": "3d92723d4ca0",
+ "scenario": "local_language",
+ "policies": {
+  "villager": "meta/llama-3.1-8b-instruct",
+  "amplifier": "meta/llama-3.1-8b-instruct",
+  "official": "meta/llama-3.3-70b-instruct",
+  "ddo": "meta/llama-3.3-70b-instruct"
+ },
+ "seed": 42,
+ "wall_s": 0.1,
+ "villagers": 80,
+ "agents": 95,
+ "evacuated_at_risk_share": 0.4688,
+ "caught": 17,
+ "unneeded_evacuations": 0,
+ "rumour_believers_share": 0.05,
+ "messages": 73,
+ "rumours": 13,
+ "refusals": 23,
+ "misinfo_tag_rate": 0.0,
+ "llm_calls": 144,
+ "cache_hits": 124,
+ "budget_events": 0,
+ "upstream_errors": 0,
+ "fallbacks": 0,
+ "silent_cohorts": "",
+ "replay": true,
+ "replay_misses": 0,
+ "valid": true,
+ "gateway": "local",
+ "after_action_report": "The largest rise in evacuated\u202fshare occurred at tick\u202f12, when it jumped by\u202f0.094.  \nAt the flood tick (tick\u202f14) the evacuated\u202fshare was\u202f0.469 of the at\u2011risk population.  \nPanchayat\u202fP6 had the most people caught, with\u202f5 individuals.  \nThe peak share of rumour believers was\u202f0.05, reached at tick\u202f17.  \n\nFor future floods, we should strengthen early\u2011warning communication and evacuation drills so that a higher share of the at\u2011risk population is evacuated before the flood onset, thereby reducing the number of people caught and limiting the spread of rumours.",
+ "tokens": {
+  "villager": 16836,
+  "official": 4182,
+  "amplifier": 5290,
+  "ddo": 3279
+ },
+ "cost_usd_notional": {
+  "villager": 0.003699,
+  "official": 0.00301,
+  "amplifier": 0.001167,
+  "ddo": 0.010241
+ },
+ "otari_usage_totals": {},
+ "otari_tool_calls": {}
+}

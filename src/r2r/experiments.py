@@ -22,16 +22,32 @@ from typing import Any
 
 import pandas as pd
 
-from r2r.llm import OtariClient, load_keys
+from r2r.llm import OtariClient, make_client
 from r2r.model import Scenario
 from r2r.run import RESULTS, run_scenario
 
-# Model families: cohort -> Otari routing policy (otari/config.yml `routing.policies`).
+def _roles(small: str, large: str) -> dict[str, str]:
+    return {"villager": small, "amplifier": small, "official": large, "ddo": large}
+
+
+# Model families: cohort -> what the agents send as `model`.
 MODEL_SETS: dict[str, dict[str, str]] = {
-    "qwen3": {"villager": "villager", "amplifier": "villager", "official": "official", "ddo": "official"},
-    "gemma3": {"villager": "villager-gemma", "amplifier": "villager-gemma",
-               "official": "official-gemma", "ddo": "official-gemma"},
+    # Self-hosted gateway: routing policies from otari/config.yml `routing.policies`.
+    "qwen3": _roles("villager", "official"),
+    "gemma3": _roles("villager-gemma", "official-gemma"),
+    # otari.ai: catalog ids of open-weight models (GET /api/v1/models). An unpinned catalog id
+    # is routed across its providers by Otari (per otari docs/routing.md, "automatic routing").
+    "llama-hosted": _roles("meta/llama-3.1-8b-instruct", "meta/llama-3.3-70b-instruct"),
+    "gptoss-hosted": _roles("openai/gpt-oss-20b", "openai/gpt-oss-120b"),
+    # otari.ai with routing policies created in the dashboard (HOSTED.md, "Routing policies").
+    "routed-hosted": _roles("r2r-villager", "r2r-official"),
 }
+GATEWAY: dict[str, str] = {"qwen3": "local", "gemma3": "local", "llama-hosted": "hosted",
+                           "gptoss-hosted": "hosted", "routed-hosted": "hosted"}
+# On otari.ai the district office closes each run with an after-action report whose numbers
+# this model computes with Otari's code-execution tool.
+ANALYST_MODEL = "openai/gpt-oss-120b"
+LIVE_SWEEPS = ("recorded", "hosted")   # sweeps that hold live runs: self-hosted, otari.ai
 SCENARIOS: dict[str, dict[str, bool]] = {
     "baseline": {},
     "sms_alert": {"sms_alert": True},
@@ -39,6 +55,23 @@ SCENARIOS: dict[str, dict[str, bool]] = {
     "local_language": {"local_language": True},
     "all": {"sms_alert": True, "fact_check": True, "local_language": True},
 }
+
+
+def scenario_for(model_set: str, scenario_name: str, seed: int = 42, **overrides: Any) -> Scenario:
+    """The scenario of one (model family, intervention, seed) cell."""
+    analyst = ANALYST_MODEL if GATEWAY[model_set] == "hosted" else None
+    return dataclasses.replace(Scenario(seed=seed), policies=MODEL_SETS[model_set], analyst_model=analyst,
+                               **SCENARIOS[scenario_name], **overrides)
+
+
+def live_runs(sweeps: tuple[str, ...] | list[str] = LIVE_SWEEPS) -> pd.DataFrame:
+    """Rows of every live run in the given sweeps, with the sweep each came from."""
+    frames = []
+    for name in sweeps:
+        path = RESULTS / "sweeps" / name / "runs.parquet"
+        if path.exists():
+            frames.append(pd.read_parquet(path).assign(live_sweep=name))
+    return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 
 def flatten(summary: dict[str, Any]) -> dict[str, Any]:
@@ -52,18 +85,22 @@ def flatten(summary: dict[str, Any]) -> dict[str, Any]:
         row[f"otari_tokens_{c}"] = u.get("total_tokens")
         row[f"otari_latency_ms_{c}"] = u.get("avg_latency_ms")
         row[f"otari_errors_{c}"] = u.get("error_count")
+    for c, n in summary.get("otari_tool_calls", {}).items():
+        row[f"otari_tool_calls_{c}"] = n
+    row.pop("after_action_report", None)   # long text: kept in the run folder, not in the table
     return row
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--name", default="main")
-    ap.add_argument("--models", nargs="+", default=list(MODEL_SETS), choices=list(MODEL_SETS))
+    ap.add_argument("--models", nargs="+", default=None, choices=list(MODEL_SETS),
+                    help="default: qwen3 gemma3 for a live sweep; every recorded family for a replay")
     ap.add_argument("--scenarios", nargs="+", default=list(SCENARIOS), choices=list(SCENARIOS))
     ap.add_argument("--seeds", nargs="+", type=int, default=[42])
-    ap.add_argument("--replay-from", default=None,
-                    help="replay the LLM layer recorded by an earlier live sweep of this name instead of calling "
-                         "Otari; Otari usage columns are copied from that sweep")
+    ap.add_argument("--replay-from", nargs="+", default=None, metavar="SWEEP",
+                    help="replay the LLM layer recorded by earlier live sweeps (e.g. recorded hosted) instead "
+                         "of calling Otari; Otari usage columns are copied from those sweeps")
     args = ap.parse_args()
     logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
 
@@ -72,15 +109,18 @@ def main() -> None:
     runs_path, model_path = out / "runs.parquet", out / "model.parquet"
     runs = pd.read_parquet(runs_path) if runs_path.exists() else pd.DataFrame()
     done = set(zip(runs.get("model_set", []), runs.get("scenario_name", []), runs.get("seed", [])))
-    keys = {} if args.replay_from else load_keys()   # replay never sends a key
-    rec = pd.read_parquet(RESULTS / "sweeps" / args.replay_from / "runs.parquet") if args.replay_from else None
+    rec = live_runs(args.replay_from) if args.replay_from else None
+    if rec is not None and rec.empty:
+        raise SystemExit(f"no live runs found in sweeps {args.replay_from}")
+    if args.models is None:
+        args.models = [m for m in MODEL_SETS if m in set(rec.model_set)] if rec is not None else ["qwen3", "gemma3"]
     cells = [(m, s, seed) for seed in args.seeds for m in args.models for s in args.scenarios]
     print(f"{len(cells)} cells, {len(done & set(cells))} already done -> {out}", flush=True)
 
     for i, (mset, sname, seed) in enumerate(cells, 1):
         if (mset, sname, seed) in done:
             continue
-        sc = dataclasses.replace(Scenario(seed=seed), policies=MODEL_SETS[mset], **SCENARIOS[sname])
+        sc = scenario_for(mset, sname, seed)
         live = None
         if rec is not None:
             hit = rec[(rec.model_set == mset) & (rec.scenario_name == sname) & (rec.seed == seed)]
@@ -91,16 +131,19 @@ def main() -> None:
         t0 = time.perf_counter()
         # Replay serves this cell's own recorded live run first (its answers, refusals and
         # outages in order); see OtariClient.replay_run.
-        client = OtariClient(keys, replay=live is not None, replay_run=None if live is None else live["run_id"])
+        client = (OtariClient({}, replay=True, replay_run=live["run_id"]) if live is not None   # replay sends no key
+                  else make_client(GATEWAY[mset]))
         summary = run_scenario(sc, client=client, out_root=out)
         if not summary["valid"]:
             print(f"[{i}/{len(cells)}] {mset} {sname} seed={seed}: INVALID ({summary['upstream_errors']} upstream "
                   f"errors), not recorded; rerun the command to retry this cell", flush=True)
             continue
-        row = flatten(summary) | {"model_set": mset, "scenario_name": sname, "seed": seed}
+        row = flatten(summary) | {"model_set": mset, "scenario_name": sname, "seed": seed,
+                                  "gateway": GATEWAY[mset]}
         if live is not None:
             for c in [c for c in rec.columns if c.startswith("otari_")] + ["run_id", "wall_s"]:
                 row[f"live_{c}" if c in ("run_id", "wall_s") else c] = live[c]
+            row["live_sweep"] = live["live_sweep"]
         runs = pd.concat([runs, pd.DataFrame([row])], ignore_index=True)
         runs.to_parquet(runs_path)
         mv = pd.read_parquet(Path(summary["out_dir"]) / "model.parquet").assign(

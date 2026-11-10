@@ -1,0 +1,47 @@
+{
+ "run_id": "695788d3e97f",
+ "scenario": "baseline",
+ "policies": {
+  "villager": "openai/gpt-oss-20b",
+  "amplifier": "openai/gpt-oss-20b",
+  "official": "openai/gpt-oss-120b",
+  "ddo": "openai/gpt-oss-120b"
+ },
+ "seed": 42,
+ "wall_s": 0.2,
+ "villagers": 80,
+ "agents": 95,
+ "evacuated_at_risk_share": 0.5312,
+ "caught": 15,
+ "unneeded_evacuations": 0,
+ "rumour_believers_share": 0.1,
+ "messages": 96,
+ "rumours": 36,
+ "refusals": 0,
+ "misinfo_tag_rate": 0.0,
+ "llm_calls": 216,
+ "cache_hits": 122,
+ "budget_events": 0,
+ "upstream_errors": 0,
+ "fallbacks": 0,
+ "silent_cohorts": "",
+ "replay": true,
+ "replay_misses": 0,
+ "valid": true,
+ "gateway": "local",
+ "after_action_report": "The greatest single\u2011tick increase in evacuation share was 0.187, occurring between ticks\u202f11 and\u202f12 (the rise is recorded at tick\u202f12).  \nAt the moment the flash flood struck (tick\u202f14) the overall evacuation share was 0.531 (53.1\u202f%).  \nThe panchayat with the highest number of people caught by the flood was\u202fP0, with\u202f4\u202findividuals.  \nThe peak proportion of the population believing the rumour was 0.10 (10\u202f%), first reached at tick\u202f3.  \n\n**Recommendation:**\u202fNext time, strengthen early\u2011warning communication and community drills so that rumour\u2011driven misinformation is countered quickly and evacuation actions can begin before the flood onset, reducing both the rise in un\u2011evacuated share and the number of people caught.",
+ "tokens": {
+  "villager": 46626,
+  "official": 4879,
+  "amplifier": 9472,
+  "ddo": 3295
+ },
+ "cost_usd_notional": {
+  "villager": 0.002685,
+  "official": 0.000415,
+  "amplifier": 0.000696,
+  "ddo": 0.010249
+ },
+ "otari_usage_totals": {},
+ "otari_tool_calls": {}
+}

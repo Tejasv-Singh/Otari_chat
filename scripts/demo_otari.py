@@ -1,8 +1,9 @@
-"""Trigger the Otari events shown in the demo, on cue, against the local gateway.
+"""Trigger the Otari events shown in the demo, on cue.
 
-    uv run python scripts/demo_otari.py budget      # amplifier key until Otari refuses it
-    uv run python scripts/demo_otari.py guardrail   # one rumour and one alert through the guardrail
-    uv run python scripts/demo_otari.py failover    # one call per routing policy: who served it?
+    uv run python scripts/demo_otari.py hosted      # otari.ai: two model roles, then code execution
+    uv run python scripts/demo_otari.py budget      # local gateway: amplifier key until Otari refuses it
+    uv run python scripts/demo_otari.py guardrail   # local gateway: a rumour and an alert through the guardrail
+    uv run python scripts/demo_otari.py failover    # local gateway: one call per routing policy: who served it?
 
 Every call goes through the same OtariClient the simulation uses, under a fresh
 run id, so it spends a fresh per-run budget and is easy to find in Otari's
@@ -19,7 +20,8 @@ from __future__ import annotations
 import argparse
 
 from r2r import prompts
-from r2r.llm import LLMResult, OtariClient, load_keys
+from r2r.experiments import ANALYST_MODEL, MODEL_SETS
+from r2r.llm import CODE_EXECUTION_TOOL, LLMResult, OtariClient, load_keys, make_client
 
 DASHBOARD = "http://localhost:8000"   # a self-hosted gateway serves it at its root (otari docs/dashboard.md)
 
@@ -31,6 +33,27 @@ def show(label: str, r: LLMResult, link: bool = True) -> None:
           f"{extra}")
     if r.request_id and link:
         print(f"  {'':<22} {DASHBOARD}/requests?request={r.request_id}")
+
+
+def hosted(client: OtariClient) -> None:
+    """The same client, pointed at otari.ai: a small and a large open-weight model, then the
+    analyst role computing with Otari's code-execution tool."""
+    global DASHBOARD
+    DASHBOARD = "https://otari.ai"   # otari.ai's dashboard (otari docs/dashboard.md)
+    client.policies.update(MODEL_SETS["llama-hosted"])
+    print(f"otari.ai at {client.base_url}")
+    show("villager (small)", client.chat("villager", prompts.SYSTEM_WRITER,
+                                         "Write a one-line WhatsApp message asking a neighbour if the river is rising.",
+                                         purpose="demo:hosted", tick=0, max_tokens=50))
+    show("official (large)", client.chat("official", prompts.SYSTEM_WRITER,
+                                         "Write a one-line flood warning for Kullu villages.",
+                                         purpose="demo:hosted", tick=0, max_tokens=50))
+    r = client.chat("ddo", prompts.SYSTEM_ANALYST,
+                    "Evacuated share per tick: 0.00, 0.03, 0.03, 0.12, 0.31, 0.53. Use the code tool to find the "
+                    "largest rise between consecutive ticks and the mean. Answer in one sentence.",
+                    purpose="demo:hosted", tick=0, max_tokens=300, model=ANALYST_MODEL, tools=[CODE_EXECUTION_TOOL])
+    show("analyst + code tool", r)
+    print(f"  {'':<22} cost ${r.cost_usd:.4f} (includes Otari's sandbox call)  answer: {r.text!r}")
 
 
 def budget(client: OtariClient) -> None:
@@ -81,11 +104,14 @@ def failover(client: OtariClient) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("event", choices=["budget", "guardrail", "failover"])
+    ap.add_argument("event", choices=["hosted", "budget", "guardrail", "failover"])
     args = ap.parse_args()
-    client = OtariClient(load_keys(), cache_path=None, max_retries=1)
+    if args.event == "hosted":
+        client = make_client("hosted", cache_path=None, max_retries=1)
+    else:
+        client = OtariClient(load_keys(), cache_path=None, max_retries=1)
     print(f"run id {client.run_id}")
-    {"budget": budget, "guardrail": guardrail, "failover": failover}[args.event](client)
+    {"hosted": hosted, "budget": budget, "guardrail": guardrail, "failover": failover}[args.event](client)
 
 
 if __name__ == "__main__":

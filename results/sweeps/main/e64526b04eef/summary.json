@@ -1,0 +1,47 @@
+{
+ "run_id": "e64526b04eef",
+ "scenario": "fact_check",
+ "policies": {
+  "villager": "meta/llama-3.1-8b-instruct",
+  "amplifier": "meta/llama-3.1-8b-instruct",
+  "official": "meta/llama-3.3-70b-instruct",
+  "ddo": "meta/llama-3.3-70b-instruct"
+ },
+ "seed": 42,
+ "wall_s": 0.2,
+ "villagers": 80,
+ "agents": 95,
+ "evacuated_at_risk_share": 0.3438,
+ "caught": 21,
+ "unneeded_evacuations": 0,
+ "rumour_believers_share": 0.05,
+ "messages": 70,
+ "rumours": 10,
+ "refusals": 26,
+ "misinfo_tag_rate": 0.0,
+ "llm_calls": 137,
+ "cache_hits": 127,
+ "budget_events": 0,
+ "upstream_errors": 0,
+ "fallbacks": 0,
+ "silent_cohorts": "",
+ "replay": true,
+ "replay_misses": 0,
+ "valid": true,
+ "gateway": "local",
+ "after_action_report": "The largest single\u2011tick increase in evacuated share occurred at tick\u202f12, when the share jumped by\u202f0.156.  \nAt the flood tick (tick\u202f14) the evacuated share was\u202f0.344 of the at\u2011risk population.  \nPanchayat\u202fP6 recorded the highest number of people caught, with\u202f6 individuals.  \nThe peak rumour\u2011believers share was\u202f0.05, reached at tick\u202f15.  \n\nFor future floods, the district should establish an earlier, automated evacuation alert that triggers as soon as the evacuated\u2011share rise exceeds 0.10, to ensure faster community response and reduce the number of people caught.",
+ "tokens": {
+  "villager": 13903,
+  "official": 3416,
+  "amplifier": 5123,
+  "ddo": 3238
+ },
+ "cost_usd_notional": {
+  "villager": 0.003063,
+  "official": 0.002457,
+  "amplifier": 0.001128,
+  "ddo": 0.010241
+ },
+ "otari_usage_totals": {},
+ "otari_tool_calls": {}
+}

@@ -1,0 +1,47 @@
+{
+ "run_id": "430febd8d1c9",
+ "scenario": "local_language",
+ "policies": {
+  "villager": "villager-gemma",
+  "amplifier": "villager-gemma",
+  "official": "official-gemma",
+  "ddo": "official-gemma"
+ },
+ "seed": 42,
+ "wall_s": 0.2,
+ "villagers": 80,
+ "agents": 95,
+ "evacuated_at_risk_share": 0.5,
+ "caught": 16,
+ "unneeded_evacuations": 1,
+ "rumour_believers_share": 0.2625,
+ "messages": 67,
+ "rumours": 7,
+ "refusals": 0,
+ "misinfo_tag_rate": 0.0469,
+ "llm_calls": 99,
+ "cache_hits": 119,
+ "budget_events": 1,
+ "upstream_errors": 0,
+ "fallbacks": 0,
+ "silent_cohorts": "amplifier",
+ "replay": true,
+ "replay_misses": 0,
+ "valid": true,
+ "gateway": "local",
+ "after_action_report": null,
+ "tokens": {
+  "villager": 14689,
+  "official": 3711,
+  "amplifier": 1400,
+  "ddo": 0
+ },
+ "cost_usd_notional": {
+  "villager": 0.000311,
+  "official": 0.00026,
+  "amplifier": 4.2e-05,
+  "ddo": 0
+ },
+ "otari_usage_totals": {},
+ "otari_tool_calls": {}
+}

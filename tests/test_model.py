@@ -129,3 +129,21 @@ def test_evacuation_never_reverses_and_nobody_is_caught_before_the_flood(baselin
     assert mv["evacuated_at_risk_share"].is_monotonic_increasing
     assert (mv.loc[mv.tick < BASE.flood_tick, "caught"] == 0).all()
     assert mv["caught"].iloc[-1] == mv.loc[mv.tick == BASE.flood_tick, "caught"].iloc[0]   # caught at the flood only
+
+
+def test_a_model_that_refuses_to_write_rumours_sends_none() -> None:
+    m, _ = run(BASE, FakeOtari(refuse_rumours=True))
+    final = m.datacollector.get_model_vars_dataframe().iloc[-1]
+    assert final.rumours == 0 and final.refusals > 0
+    assert not any(prompts.is_refusal(x.text) for x in m.messages)       # a refusal is never forwarded
+    assert final.rumour_believers_share == 0
+
+
+def test_after_action_report_uses_the_code_tool_on_the_analyst_model() -> None:
+    m, fake = run(dataclasses.replace(BASE, analyst_model="openai/gpt-oss-120b"))
+    assert m.after_action_report and "tick 12" in m.after_action_report
+    body = fake.bodies[-1]                                               # the last call of the run
+    assert body["model"] == "openai/gpt-oss-120b" and body["tools"] == [{"type": "otari_code_execution"}]
+    assert "tick,evacuated_share,caught" in body["messages"][1]["content"]
+    assert body["metadata"]["cohort"] == "ddo"                           # on the district office's key and budget
+    assert run(BASE)[0].after_action_report is None                      # off unless an analyst model is set

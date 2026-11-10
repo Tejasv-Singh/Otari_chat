@@ -8,20 +8,19 @@ no keys and no gateway, and reproduces the live run call for call
 
 from __future__ import annotations
 
-import dataclasses
 from typing import Any
 
 import pandas as pd
 from pyproj import Transformer
 
-from r2r.experiments import MODEL_SETS, SCENARIOS
+from r2r.experiments import MODEL_SETS, live_runs, scenario_for
 from r2r.llm import COHORTS, OtariClient
 from r2r.model import Amplifier, DistrictDisasterOffice, FloodModel, PanchayatOfficial, Scenario, Villager
 from r2r.run import RESULTS
 
 STATUS_CODE = {"home": 0, "evacuating": 1, "safe": 2, "caught": 3}
 SERIES = (["tick", "evacuated_at_risk_share", "caught", "unneeded_evacuations", "mean_danger",
-           "rumour_believers_share", "messages", "rumours", "misinfo_checked", "misinfo_flagged",
+           "rumour_believers_share", "messages", "rumours", "refusals", "misinfo_checked", "misinfo_flagged",
            "misinfo_tag_rate", "llm_calls", "cache_hits", "budget_events", "upstream_errors", "fallbacks"]
           + [f"{k}_{c}" for c in COHORTS for k in ("tokens", "cost", "latency_ms")])
 
@@ -31,8 +30,15 @@ def recorded_runs(sweep: str = "recorded") -> pd.DataFrame:
     return pd.read_parquet(path) if path.exists() else pd.DataFrame()
 
 
-def recorded_run_id(model_set: str, scenario_name: str, seed: int = 42, sweep: str = "recorded") -> str | None:
-    rec = recorded_runs(sweep)
+def recorded_families() -> list[str]:
+    """Model families that have at least one live run to replay, in MODEL_SETS order."""
+    rec = live_runs()
+    have = set(rec.model_set) if not rec.empty else set()
+    return [m for m in MODEL_SETS if m in have]
+
+
+def recorded_run_id(model_set: str, scenario_name: str, seed: int = 42) -> str | None:
+    rec = live_runs()
     if rec.empty:
         return None
     hit = rec[(rec.model_set == model_set) & (rec.scenario_name == scenario_name) & (rec.seed == seed)]
@@ -40,7 +46,7 @@ def recorded_run_id(model_set: str, scenario_name: str, seed: int = 42, sweep: s
 
 
 def replay_scenario(model_set: str, scenario_name: str, seed: int = 42) -> tuple[Scenario, OtariClient]:
-    sc = dataclasses.replace(Scenario(seed=seed), policies=MODEL_SETS[model_set], **SCENARIOS[scenario_name])
+    sc = scenario_for(model_set, scenario_name, seed)
     # keys are never sent in replay mode
     client = OtariClient({}, policies=dict(MODEL_SETS[model_set]), replay=True,
                          replay_run=recorded_run_id(model_set, scenario_name, seed))
@@ -109,6 +115,7 @@ def capture(model: FloodModel) -> dict[str, Any]:
         "params": {k: getattr(model.params, k) for k in ("seed", "ticks", "warning_tick", "rumour_start",
                                                         "rising_tick", "flood_tick")},
         "policies": dict(model.llm.policies) if model.llm else {},
+        "after_action": model.after_action_report,
         "replay_run": model.llm.replay_run if model.llm else None,
         "replay_misses": model.llm.replay_misses if model.llm else 0,
         "villagers": people,
@@ -123,8 +130,8 @@ def capture(model: FloodModel) -> dict[str, Any]:
 def sweep_table(sweep: str = "main") -> list[dict[str, Any]]:
     """One row per run of a sweep: final outcomes and Otari usage, for comparison views."""
     runs = recorded_runs(sweep)
-    keep = ["model_set", "scenario_name", "seed", "evacuated_at_risk_share", "caught", "unneeded_evacuations",
-            "rumour_believers_share", "misinfo_tag_rate", "llm_calls", "cache_hits", "budget_events",
+    keep = ["model_set", "scenario_name", "seed", "gateway", "evacuated_at_risk_share", "caught", "unneeded_evacuations",
+            "rumour_believers_share", "rumours", "refusals", "misinfo_tag_rate", "llm_calls", "cache_hits", "budget_events",
             "upstream_errors", "fallbacks", "silent_cohorts", "live_run_id", "live_wall_s"]
     keep += [c for c in runs.columns if c.startswith(("tokens_", "cost_", "otari_"))]
     rows = runs[[c for c in keep if c in runs.columns]].to_dict("records")

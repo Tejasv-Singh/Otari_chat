@@ -1,0 +1,3 @@
+The biggest jump in evacuation share occurred between ticks 11 and 12, with the share rising by 0.156 at tick 12. At the flood tick (tick 14) the evacuated share was 0.344 of the at‑risk population. The panchayat with the highest number of people caught was P6, where 7 individuals were swept away. The peak proportion of the population believing the rumour was 0.025, reached at tick 11.  
+
+**Recommendation:** Future response plans should prioritize rapid information verification and targeted evacuation messaging before tick 11 to curb rumour spread and accelerate evacuations, thereby reducing the number of people caught in the flood.

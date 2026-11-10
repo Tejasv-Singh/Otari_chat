@@ -1,0 +1,47 @@
+{
+ "run_id": "e9fac3dd5074",
+ "scenario": "fact_check",
+ "policies": {
+  "villager": "openai/gpt-oss-20b",
+  "amplifier": "openai/gpt-oss-20b",
+  "official": "openai/gpt-oss-120b",
+  "ddo": "openai/gpt-oss-120b"
+ },
+ "seed": 42,
+ "wall_s": 0.2,
+ "villagers": 80,
+ "agents": 95,
+ "evacuated_at_risk_share": 0.3438,
+ "caught": 21,
+ "unneeded_evacuations": 0,
+ "rumour_believers_share": 0.025,
+ "messages": 96,
+ "rumours": 36,
+ "refusals": 0,
+ "misinfo_tag_rate": 0.0,
+ "llm_calls": 216,
+ "cache_hits": 122,
+ "budget_events": 0,
+ "upstream_errors": 0,
+ "fallbacks": 0,
+ "silent_cohorts": "",
+ "replay": true,
+ "replay_misses": 0,
+ "valid": true,
+ "gateway": "local",
+ "after_action_report": "The biggest jump in evacuation share occurred between ticks\u202f11 and\u202f12, with the share rising by\u202f0.156 at tick\u202f12. At the flood tick (tick\u202f14) the evacuated share was\u202f0.344 of the at\u2011risk population. The panchayat with the highest number of people caught was\u202fP6, where\u202f7 individuals were swept away. The peak proportion of the population believing the rumour was\u202f0.025, reached at tick\u202f11.  \n\n**Recommendation:**\u202fFuture response plans should prioritize rapid information verification and targeted evacuation messaging before tick\u202f11 to curb rumour spread and accelerate evacuations, thereby reducing the number of people caught in the flood.",
+ "tokens": {
+  "villager": 45674,
+  "official": 4450,
+  "amplifier": 9199,
+  "ddo": 3256
+ },
+ "cost_usd_notional": {
+  "villager": 0.002642,
+  "official": 0.000342,
+  "amplifier": 0.000658,
+  "ddo": 0.010243
+ },
+ "otari_usage_totals": {},
+ "otari_tool_calls": {}
+}

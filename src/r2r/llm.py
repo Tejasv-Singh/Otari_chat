@@ -37,6 +37,17 @@ GUARDRAIL_PROFILE = "flood-misinfo"  # served by otari/guardrail/app.py
 GUARDRAIL_VERSION = 2
 TRANSIENT = {408, 429, 500, 502, 503, 504}
 
+LOCAL_BASE_URL = "http://127.0.0.1:8000/api/v1"      # per otari README.md "Quickstart"
+# otari.ai's API (per otari docs/quickstart.md "4. Send a request"); OTARI_BASE_URL overrides
+# it, e.g. https://eu.api.otari.ai/api/v1 for an account in the European Union.
+HOSTED_BASE_URL = "https://api.otari.ai/api/v1"
+# Tool type run by Otari itself (per otari docs/tools.md "Built-in tools").
+CODE_EXECUTION_TOOL = {"type": "otari_code_execution"}
+# gpt-oss always reasons before it answers and the reasoning counts against max_tokens
+# (measured on otari.ai: a 24-token reading came back empty). Models listed here get this
+# many extra output tokens; the caller's own max_tokens still names the prompt in the cache.
+REASONING_HEADROOM: dict[str, int] = {"openai/gpt-oss-20b": 400, "openai/gpt-oss-120b": 400}
+
 
 @dataclass
 class LLMResult:
@@ -74,24 +85,50 @@ def read_dotenv(path: Path = ROOT / ".env") -> dict[str, str]:
     return env
 
 
-def load_keys() -> dict[str, str]:
-    """Cohort keys from the environment, falling back to .env. Never logged."""
+def load_keys(gateway: str = "local") -> dict[str, str]:
+    """Cohort keys from the environment, falling back to .env. Never logged.
+
+    local:  R2R_KEY_<COHORT>, the keys declared in otari/config.yml.
+    hosted: R2R_HOSTED_KEY_<COHORT> if set (one otari.ai key per cohort, see HOSTED.md),
+            otherwise the single OTARI_API_KEY for every cohort.
+    """
     dotenv = read_dotenv()
+
+    def env(name: str) -> str | None:
+        return os.environ.get(name) or dotenv.get(name) or None
+
     keys: dict[str, str] = {}
     for c in COHORTS:
-        name = f"R2R_KEY_{c.upper()}"
-        val = os.environ.get(name) or dotenv.get(name)
-        if not val:
-            raise RuntimeError(f"{name} is not set; run `python scripts/init_env.py`")
+        if gateway == "hosted":
+            val = env(f"R2R_HOSTED_KEY_{c.upper()}") or env("OTARI_API_KEY")
+            if not val:
+                raise RuntimeError("OTARI_API_KEY is not set; add your otari.ai key to .env (see HOSTED.md)")
+        else:
+            val = env(f"R2R_KEY_{c.upper()}")
+            if not val:
+                raise RuntimeError(f"R2R_KEY_{c.upper()} is not set; run `python scripts/init_env.py`")
         keys[c] = val
     return keys
+
+
+def make_client(gateway: str = "local", **kw: Any) -> "OtariClient":
+    """A live client for the local gateway or for otari.ai."""
+    if gateway == "hosted":
+        base = os.environ.get("OTARI_BASE_URL") or read_dotenv().get("OTARI_BASE_URL") or HOSTED_BASE_URL
+        return OtariClient(load_keys("hosted"), base_url=base, gateway="hosted", **kw)
+    return OtariClient(load_keys("local"), **kw)
 
 
 @dataclass
 class OtariClient:
     keys: dict[str, str]
     policies: dict[str, str] = field(default_factory=lambda: dict(DEFAULT_POLICIES))
-    base_url: str = "http://127.0.0.1:8000/api/v1"   # per otari README.md "Quickstart"
+    base_url: str = LOCAL_BASE_URL
+    gateway: str = "local"           # "local" (self-hosted) or "hosted" (otari.ai); informational
+    # Name a per-run end user on every request. Only a service key may do that: any other
+    # key is refused with 403 "'user' field does not match the authenticated API key's user"
+    # (measured on otari.ai), after which the client stops naming one.
+    name_end_user: bool = True
     run_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     # Every live call (answers, budget refusals, upstream errors) is appended here with
     # its run id. It is read back only in replay mode (offline calibration, sweeps).
@@ -134,21 +171,22 @@ class OtariClient:
     # ------------------------------------------------------------------ public
 
     def chat(self, cohort: str, system: str, user: str, *, purpose: str, tick: int,
-             max_tokens: int = 120, check_misinfo: bool = False) -> LLMResult:
+             max_tokens: int = 120, check_misinfo: bool = False, model: str | None = None,
+             tools: list[dict[str, Any]] | None = None) -> LLMResult:
         """One chat completion for `cohort`. Never raises for model-side failures.
 
         check_misinfo runs the guardrail on this call's *input* in monitor mode: Otari
         checks input only ("output is accepted but not enforced yet", per
         docs/guardrails-reference.md), so the message being interpreted is tagged here.
         """
-        policy = self.policies[cohort]
+        policy = model or self.policies[cohort]   # `model` overrides the cohort's policy for one call
         base = LLMResult(text="", status="silent", cohort=cohort, purpose=purpose, tick=tick)
         if cohort in self.silent:
             self.log.append(base)
             return base
 
         messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
-        key = self._cache_key(policy, messages, max_tokens, check_misinfo)
+        key = self._cache_key(policy, messages, max_tokens, check_misinfo, tools)
         if key in self._cache:
             v = self._cache[key]
             res = LLMResult(text=v["text"], status="cached", cohort=cohort, purpose=purpose, tick=tick,
@@ -165,16 +203,19 @@ class OtariClient:
         body: dict[str, Any] = {
             "model": policy,
             "messages": messages,
-            "max_tokens": max_tokens,
+            "max_tokens": max_tokens + REASONING_HEADROOM.get(policy, 0),
             # qwen3 otherwise spends max_tokens on hidden reasoning (spike/SPIKE.md finding 4);
             # Otari forwards it (per docs/routing.md "What is billed and what the caller sees").
             "reasoning_effort": "none",
             # Tags on every usage row (per docs/api-reference.md "Request tags").
             "metadata": {"run": self.run_id, "cohort": cohort, "purpose": purpose},
+        }
+        if self.name_end_user:
             # Cohort keys are service keys: naming a per-run end user starts it on the
             # cohort's per-run budget (per docs/end-users.md "Name the end user on each request").
-            "user": self.end_user(cohort),
-        }
+            body["user"] = self.end_user(cohort)
+        if tools:
+            body["tools"] = tools   # Otari runs otari_* tools itself (per docs/tools.md "Who runs a tool")
         if check_misinfo:
             # Top-level field (per docs/guardrails-reference.md "The guardrails request field").
             body["guardrails"] = [{"profile": GUARDRAIL_PROFILE, "mode": "monitor", "on_unavailable": "monitor"}]
@@ -205,7 +246,10 @@ class OtariClient:
     def key_usage(self, cohort: str) -> dict[str, Any]:
         """Otari's own per-key usage for this run, filtered by the run tag
         (per docs/api-reference.md "A key's own budget and usage" and "Request tags")."""
-        r = self._http.get(f"{self.base_url}/key/usage/summary", params={"tag": f"run:{self.run_id}"},
+        # Both tags must match (repeatable `tag=key:value`, per docs/api-reference.md "Request tags"),
+        # so cohorts that share one key, as on otari.ai, are still reported separately.
+        r = self._http.get(f"{self.base_url}/key/usage/summary",
+                           params=[("tag", f"run:{self.run_id}"), ("tag", f"cohort:{cohort}")],
                            headers=self._auth(cohort))
         return r.json() if r.status_code == 200 else {"error": r.status_code}
 
@@ -242,6 +286,12 @@ class OtariClient:
                 log.info("cohort %s exhausted its Otari budget at tick %s", cohort, base.tick)
                 return _replace(base, status="budget_exhausted", attempts=attempt, latency_ms=latency,
                                 request_id=r.headers.get("Otari-Request-ID"))
+            if r.status_code == 403 and "user" in body and "'user' field" in r.text:
+                # Not a service key: it may not name an end user. Stop naming one and resend.
+                log.info("key for %s is not a service key; requests no longer name an end user", cohort)
+                self.name_end_user = False
+                body.pop("user")
+                return self._post(cohort, body, base)
             if r.status_code in TRANSIENT:
                 last_err = f"{r.status_code}"
                 time.sleep(attempt * self.retry_backoff_s)
@@ -274,9 +324,12 @@ class OtariClient:
         )
 
     @staticmethod
-    def _cache_key(policy: str, messages: list[dict[str, str]], max_tokens: int, check: bool) -> str:
-        blob = json.dumps([policy, messages, max_tokens, GUARDRAIL_VERSION if check else None],
-                          sort_keys=True, ensure_ascii=False)
+    def _cache_key(policy: str, messages: list[dict[str, str]], max_tokens: int, check: bool,
+                   tools: list[dict[str, Any]] | None = None) -> str:
+        parts: list[Any] = [policy, messages, max_tokens, GUARDRAIL_VERSION if check else None]
+        if tools:
+            parts.append(tools)   # appended only when present, so earlier recordings keep their keys
+        blob = json.dumps(parts, sort_keys=True, ensure_ascii=False)
         return hashlib.sha256(blob.encode()).hexdigest()
 
     def _store(self, key: str, res: LLMResult) -> None:
