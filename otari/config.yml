@@ -43,6 +43,14 @@ pricing:
   "ollama:qwen3:4b-instruct":
     input_price_per_million: 0.05
     output_price_per_million: 0.10
+  # Same notional price per size class across families, so cost differences come
+  # from token counts (verbosity), not from the price sheet.
+  "ollama:gemma3:1b":
+    input_price_per_million: 0.02
+    output_price_per_million: 0.04
+  "ollama:gemma3:4b":
+    input_price_per_million: 0.05
+    output_price_per_million: 0.10
 
 # Cohort routing with cloud failover, configured here and not in our code
 # (per docs/routing.md "Failover" and "Selection and failure are separate").
@@ -60,6 +68,19 @@ routing:
         - default: "ollama:qwen3:4b-instruct"
       on_failure:
         - "groq:llama-3.3-70b-versatile"
+    # Second open-weight family for the model-choice experiment (Phase 3). Same
+    # roles, same failover; only the local model differs. Policy names may not
+    # contain ":" or "/" (per docs/routing.md).
+    villager-gemma:
+      select:
+        - default: "ollama:gemma3:1b"
+      on_failure:
+        - "groq:llama-3.1-8b-instant"
+    official-gemma:
+      select:
+        - default: "ollama:gemma3:4b"
+      on_failure:
+        - "groq:llama-3.3-70b-versatile"
 
 # Our own misinformation-pattern guardrail service; any service implementing
 # POST /validate can sit here (per docs/guardrails-reference.md
@@ -67,44 +88,50 @@ routing:
 # "Built-in tools and guardrails variables").
 guardrails_url: "http://misinfo-guard:8000"
 
-# One budget and one key per agent cohort, declared in config
-# (per docs/configuration.md "Budgets and API keys in config").
-# Fields per that section: max_budget, token_limit, request_limit,
-# budget_duration_sec. `ceiling` caps the key as a whole.
-# The amplifier budget is deliberately tiny so it runs out during a run:
-# that is a model event (the cohort goes silent), not a crash.
+# Budgets, declared in config (per docs/configuration.md "Budgets and API keys in
+# config"; fields: name, token_limit, budget_duration_sec, ...).
+#
+# Two layers per cohort:
+#  - r2r-run-<cohort>: a PER-RUN budget. Each cohort key is a service key and every
+#    request names the end user "<cohort>-<run_id>", so each simulation run starts a
+#    fresh end user on this budget (per docs/end-users.md "Name the end user on each
+#    request" and docs/operator-service-keys.md "Or declare it in config.yml").
+#  - r2r-day-<cohort>: the key's ceiling, pooling every run in a day.
+# The amplifier per-run budget is small on purpose: rumour-mongers running out of
+# budget mid-run is a model event (that cohort goes silent), not a crash.
 budgets:
-  r2r-villager:
-    name: "Villager cohort"
-    token_limit: 200000
-    budget_duration_sec: 86400
-  r2r-official:
-    name: "Panchayat official cohort"
-    token_limit: 200000
-    budget_duration_sec: 86400
-  r2r-amplifier:
-    name: "Amplifier cohort (tiny on purpose)"
-    token_limit: 800
-    budget_duration_sec: 86400
-  r2r-ddo:
-    name: "District Disaster Office"
-    token_limit: 100000
-    budget_duration_sec: 86400
+  r2r-run-villager:  {name: "Villager, per run",  token_limit: 60000, budget_duration_sec: 86400}
+  r2r-run-official:  {name: "Official, per run",  token_limit: 20000, budget_duration_sec: 86400}
+  r2r-run-amplifier: {name: "Amplifier, per run (small on purpose)", token_limit: 1500, budget_duration_sec: 86400}
+  r2r-run-ddo:       {name: "District Disaster Office, per run", token_limit: 15000, budget_duration_sec: 86400}
+  r2r-day-villager:  {name: "Villager key, daily ceiling",  token_limit: 3000000, budget_duration_sec: 86400}
+  r2r-day-official:  {name: "Official key, daily ceiling",  token_limit: 1000000, budget_duration_sec: 86400}
+  r2r-day-amplifier: {name: "Amplifier key, daily ceiling", token_limit: 200000,  budget_duration_sec: 86400}
+  r2r-day-ddo:       {name: "DDO key, daily ceiling",       token_limit: 1000000, budget_duration_sec: 86400}
 
+# Key fields per docs/configuration.md "Budgets and API keys in config".
 api_keys:
   villager:
     secret: ${R2R_KEY_VILLAGER}
     user_id: cohort-villager
-    ceiling: r2r-villager
+    is_service_key: true
+    end_user_budget_id: r2r-run-villager
+    ceiling: r2r-day-villager
   official:
     secret: ${R2R_KEY_OFFICIAL}
     user_id: cohort-official
-    ceiling: r2r-official
+    is_service_key: true
+    end_user_budget_id: r2r-run-official
+    ceiling: r2r-day-official
   amplifier:
     secret: ${R2R_KEY_AMPLIFIER}
     user_id: cohort-amplifier
-    ceiling: r2r-amplifier
+    is_service_key: true
+    end_user_budget_id: r2r-run-amplifier
+    ceiling: r2r-day-amplifier
   ddo:
     secret: ${R2R_KEY_DDO}
     user_id: cohort-ddo
-    ceiling: r2r-ddo
+    is_service_key: true
+    end_user_budget_id: r2r-run-ddo
+    ceiling: r2r-day-ddo

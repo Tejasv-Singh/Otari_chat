@@ -34,25 +34,46 @@ def _p(name: str, expr: str, weight: float) -> Pattern:
     return Pattern(name, re.compile(expr, re.IGNORECASE), weight)
 
 
-# Harmful-misinformation patterns for a monsoon flash flood. English plus common
-# romanised Hindi (Hinglish) as forwarded on WhatsApp in Himachal Pradesh.
+def _gap(n: int) -> str:
+    """Up to n characters *within one sentence*. Without the sentence bound,
+    "Do not wait! Evacuate now!" matched "do not ... evacuate" (found in the Phase 2
+    baseline run). । is the Devanagari danda that ends Hindi sentences."""
+    return r"[^.!?।\n]{0,%d}" % n
+
+
+# Harmful-misinformation patterns for a monsoon flash flood: English, romanised Hindi
+# (Hinglish) as forwarded on WhatsApp in Himachal Pradesh, and Devanagari Hindi (small
+# models asked for Hinglish often answer in Devanagari, measured in the Phase 2 MVP run).
+# No \b in the Devanagari patterns: \b is unreliable around Devanagari combining marks.
 PATTERNS: tuple[Pattern, ...] = (
     _p("discredits_official_alert",
-       r"\b(alert|warning|sms|message)\b.{0,40}\b(fake|false|hoax|jhooth|jhoota|galat|afwah)\b"
-       r"|\b(fake|false|hoax|jhooth|jhoota)\b.{0,40}\b(alert|warning|sms)\b", 0.6),
+       r"\b(alert|warning|sms|message)\b" + _gap(40) + r"\b(fake|false|hoax|jhooth|jhoota|galat|afwah)\b"
+       r"|\b(fake|false|hoax|jhooth|jhoota)\b" + _gap(40) + r"\b(alert|warning|sms)\b", 0.6),
     _p("discourages_evacuation",
-       r"\b(don'?t|do not|no need to|never|mat)\b.{0,25}\b(evacuate|leave|move|nikal|bhaag|chhod)\w*", 0.6),
+       r"\b(don'?t|do not|no need to|never|mat)\b" + _gap(25) + r"\b(evacuate|leave|move|nikal|bhaag|chhod)\w*", 0.6),
     _p("false_safety_claim",
-       r"\b(river|nala|nadi|water|flood|baadh|paani)\b.{0,40}\b(safe|receding|already gone|kam ho gaya|normal)\b", 0.35),
+       r"\b(river|nala|nadi|water|flood|baadh|paani)\b" + _gap(40)
+       + r"\b(safe|receding|already gone|kam ho gaya|normal)\b", 0.35),
     _p("false_dam_claim",
-       r"\b(dam|bandh|barrage|pandoh|larji|malana)\b.{0,40}\b(burst|broke|broken|collapsed|toot|phat)\w*", 0.5),
+       r"\b(dam|bandh|barrage|pandoh|larji|malana)\b" + _gap(40) + r"\b(burst|broke|broken|collapsed|toot|phat)\w*", 0.5),
     _p("distrust_authorities",
-       r"\b(government|sarkar|administration|ndrf|sdrf|army|police|dc office|officials?)\b.{0,40}"
-       r"\b(lying|lie|lies|won'?t come|not coming|nahi aayeg\w*|jhooth)\b", 0.45),
+       r"\b(government|sarkar|administration|ndrf|sdrf|army|police|dc office|officials?)\b" + _gap(40)
+       + r"\b(lying|lie|lies|won'?t come|not coming|nahi aayeg\w*|jhooth)\b", 0.45),
     _p("urgent_forward_chain",
-       r"\b(forward|share|send)\b.{0,30}\b(everyone|all groups|sabko|10 people|immediately|turant)\b", 0.25),
+       r"\b(forward|share|send)\b" + _gap(30) + r"\b(everyone|all groups|sabko|10 people|immediately|turant)\b", 0.25),
     _p("unverified_source",
        r"\b(my (cousin|uncle|friend)|someone in|suna hai|i heard|sources say)\b", 0.15),
+    _p("discredits_official_alert_hi",
+       r"(अलर्ट|चेतावनी|मैसेज|संदेश|एसएमएस|सूचना)" + _gap(40) + r"(फर्जी|फ़र्ज़ी|झूठ|अफवाह|अफ़वाह|फेक|फ़ेक|फाइक|गलत|ग़लत)"
+       r"|(फर्जी|फ़र्ज़ी|झूठ|अफवाह|अफ़वाह|फेक|फ़ेक|फाइक)" + _gap(40) + r"(अलर्ट|चेतावनी|मैसेज|संदेश|एसएमएस)", 0.6),
+    _p("discourages_evacuation_hi",
+       r"(मत|न|ना|नहीं)\s*(छोड़|छोड|निकल|जाएं|जाओ|भाग)|(घर|गांव|गाँव)\s*(में\s*)?(ही\s*)?(रहें|रहो|रुकें|रुको)", 0.6),
+    _p("false_safety_claim_hi",
+       r"(नदी|पानी|जल|बाढ़|नाला)" + _gap(30) + r"(कम हो|उतर रह|घट रह|सुरक्षित|सामान्य|रुक गया)", 0.35),
+    _p("false_dam_claim_hi", r"(डैम|डॉम|बांध|बाँध)" + _gap(30) + r"(टूट|फट)", 0.5),
+    _p("distrust_authorities_hi",
+       r"(सरकार|अधिकारी|प्रशासन|पुलिस|सेना)" + _gap(30) + r"(झूठ|धोखा|नहीं आएंगे|नहीं आएगी)", 0.45),
+    _p("urgent_forward_chain_hi", r"(फॉरवर्ड|फोरवर्ड|फ़ॉरवर्ड|शेयर)" + _gap(20) + r"(करें|करो|सबको|सभी)", 0.25),
 )
 
 THRESHOLD = 0.5
