@@ -55,6 +55,9 @@ class LLMResult:
     attempts: int = 0
     misinfo_flag: bool | None = None   # guardrail verdict on this call's input; None = not checked
     misinfo_score: float | None = None
+    # Otari-Request-ID: opens the request in Otari's dashboard at /requests?request=<id>
+    # (per otari docs/dashboard.md "Requests and Sessions").
+    request_id: str | None = None
 
     @property
     def ok(self) -> bool:
@@ -237,7 +240,8 @@ class OtariClient:
                 # A model event, not a crash: this cohort goes silent for the rest of the run.
                 self.silent.add(cohort)
                 log.info("cohort %s exhausted its Otari budget at tick %s", cohort, base.tick)
-                return _replace(base, status="budget_exhausted", attempts=attempt, latency_ms=latency)
+                return _replace(base, status="budget_exhausted", attempts=attempt, latency_ms=latency,
+                                request_id=r.headers.get("Otari-Request-ID"))
             if r.status_code in TRANSIENT:
                 last_err = f"{r.status_code}"
                 time.sleep(attempt * self.retry_backoff_s)
@@ -265,7 +269,7 @@ class OtariClient:
             cost_usd=float(usage.get("cost_usd") or 0.0),  # inline cost, docs/api-reference.md
             latency_ms=float(h.get("Otari-Response-Duration-Ms") or latency),
             provider=h.get("Otari-Provider"), model=h.get("Otari-Model"),
-            fallback=h.get("Otari-Fallback") == "true",
+            fallback=h.get("Otari-Fallback") == "true", request_id=h.get("Otari-Request-ID"),
             misinfo_flag=flag, misinfo_score=score,
         )
 

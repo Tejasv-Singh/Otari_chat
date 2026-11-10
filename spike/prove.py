@@ -57,7 +57,8 @@ class Report:
 
 
 def chat(client: httpx.Client, key: str, model: str, text: str, *, cohort: str,
-         guardrails: list[dict[str, Any]] | None = None, max_tokens: int = 60) -> httpx.Response:
+         guardrails: list[dict[str, Any]] | None = None, max_tokens: int = 60,
+         user: str | None = None) -> httpx.Response:
     body: dict[str, Any] = {
         "model": model,
         "messages": [{"role": "system", "content": NO_THINK}, {"role": "user", "content": text}],
@@ -71,6 +72,10 @@ def chat(client: httpx.Client, key: str, model: str, text: str, *, cohort: str,
     }
     if guardrails is not None:
         body["guardrails"] = guardrails  # top-level field (per docs/guardrails-reference.md)
+    if user is not None:
+        # Cohort keys are service keys: a named end user starts on the key's per-run budget
+        # (per docs/end-users.md "Name the end user on each request").
+        body["user"] = user
     return client.post(f"{BASE}/chat/completions", json=body,
                        headers={"Authorization": f"Bearer {key}"})  # per README.md "Quickstart"
 
@@ -147,12 +152,14 @@ def main() -> int:
     rep.add("guardrail:block refuses rumour", "PASS" if resp.status_code == 403 else "FAIL",
             f"status={resp.status_code} {resp.text[:140]}")
 
-    # 4. budgets: amplifier has token_limit 800, villager 200000 (otari/config.yml)
+    # 4. budgets: a fresh end user on the amplifier key gets the small per-run budget
+    #    r2r-run-amplifier (1500 tokens); the villager key's limits differ (otari/config.yml)
     attempts: list[dict[str, Any]] = []
     hit = None
-    for i in range(20):
+    end_user = f"amplifier-spike-{int(time.time())}"
+    for i in range(40):
         resp = chat(client, keys["amplifier"], "villager", f"Write a 1-line WhatsApp forward about rain, #{i}",
-                    cohort="amplifier", max_tokens=120)
+                    cohort="amplifier", max_tokens=120, user=end_user)
         s = served(resp)
         attempts.append(s)
         if resp.status_code != 200:
@@ -164,7 +171,7 @@ def main() -> int:
     ok = hit is not None and hit["status"] == 403 and hit["error_code"] == "budget_exceeded"
     rep.add("budget:amplifier runs out", "PASS" if ok else "FAIL",
             f"refused on attempt {hit['attempt']} status={hit['status']} code={hit['error_code']}" if hit
-            else "never refused in 20 attempts")
+            else "never refused in 40 attempts")
 
     budgets = {}
     for cohort in ("amplifier", "villager"):

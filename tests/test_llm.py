@@ -106,3 +106,19 @@ def test_guardrail_verdict_parsed_from_header() -> None:
                                                "on_unavailable": "monitor"}
     assert (bad.misinfo_flag, good.misinfo_flag, plain.misinfo_flag) == (True, False, None)
     assert "guardrails" not in fake.bodies[2]
+
+
+def test_other_refusals_do_not_silence_the_cohort() -> None:
+    fake = FakeOtari(block=True)
+    c = client(fake)
+    r = c.chat("villager", "s", "m", purpose="t", tick=0)
+    assert r.status == "refused" and not r.ok and fake.calls == 1      # not retried
+    assert c.silent == set()                                           # only a budget refusal silences
+
+
+def test_failover_and_request_id_are_read_from_serving_headers() -> None:
+    c = client(FakeOtari(fallback=True))
+    r = c.chat("official", "s", "m", purpose="t", tick=0)
+    assert r.ok and r.fallback and r.provider == "groq" and r.request_id == "req-1"
+    local = client(FakeOtari()).chat("official", "s", "m", purpose="t", tick=0)
+    assert not local.fallback and local.provider == "ollama"

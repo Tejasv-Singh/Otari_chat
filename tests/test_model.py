@@ -104,3 +104,28 @@ def test_interventions_change_outcomes_in_the_expected_direction(baseline: Flood
     assert any(x.kind == "factcheck" for x in fc.messages)
     rb = lambda m: m.datacollector.get_model_vars_dataframe()["rumour_believers_share"].iloc[-1]  # noqa: E731
     assert rb(fc) <= rb(sms)
+
+
+def test_otari_usage_flows_into_the_datacollector(baseline: FloodModel) -> None:
+    mv = baseline.datacollector.get_model_vars_dataframe()
+    log = baseline.llm.log
+    for cohort in ("villager", "official", "amplifier", "ddo"):
+        served = [r for r in log if r.cohort == cohort and r.status == "ok"]
+        assert mv[f"tokens_{cohort}"].iloc[-1] == sum(r.prompt_tokens + r.completion_tokens for r in served)
+        assert mv[f"cost_{cohort}"].iloc[-1] == pytest.approx(sum(r.cost_usd for r in served))
+        assert mv[f"tokens_{cohort}"].is_monotonic_increasing          # cumulative per tick
+    assert mv["tokens_villager"].iloc[-1] > 0 and mv["latency_ms_villager"].iloc[-1] > 0
+    assert mv["llm_calls"].iloc[-1] == sum(r.status == "ok" for r in log)
+
+
+def test_failovers_are_counted_as_a_model_variable() -> None:
+    m, _ = run(BASE, FakeOtari(fallback=True))
+    final = m.datacollector.get_model_vars_dataframe().iloc[-1]
+    assert final.fallbacks == final.llm_calls > 0
+
+
+def test_evacuation_never_reverses_and_nobody_is_caught_before_the_flood(baseline: FloodModel) -> None:
+    mv = baseline.datacollector.get_model_vars_dataframe()
+    assert mv["evacuated_at_risk_share"].is_monotonic_increasing
+    assert (mv.loc[mv.tick < BASE.flood_tick, "caught"] == 0).all()
+    assert mv["caught"].iloc[-1] == mv.loc[mv.tick == BASE.flood_tick, "caught"].iloc[0]   # caught at the flood only
